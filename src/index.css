@@ -1,0 +1,518 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+
+@font-face {
+  font-family: 'Rostock';
+  src: url('/fonts/Rostock_Kaligraph.ttf');
+}
+
+@font-face {
+  font-family: 'Vinque';
+  src: url('/fonts/vinque.otf');
+}
+
+@font-face {
+  font-family: 'Alice';
+  src: url('/fonts/Alice_in_Wonderland.ttf');
+}
+
+@font-face {
+  font-family: 'Cinzel Decorative';
+  src: url('/fonts/cinzel_decorative/CinzelDecorative-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cinzel Decorative';
+  src: url('/fonts/cinzel_decorative/CinzelDecorative-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Berkshire Swash';
+  src: url('/fonts/berkshire_swash/BerkshireSwash-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cardo';
+  src: url('/fonts/cardo/Cardo-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cardo';
+  src: url('/fonts/cardo/Cardo-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cardo';
+  src: url('/fonts/cardo/Cardo-Italic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes flash {
+  0% { opacity: 1; }
+  2% { opacity: 0; }
+  3% { opacity: 0.6; }
+  4% { opacity: 0.2; }
+  6% { opacity: .9; }
+  16% { opacity: .2; }
+  26% { opacity: .5; }
+  46% { opacity: .7; }
+  76% { opacity: .8; }
+  100% { opacity: 1; }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-heading: 'Cinzel Decorative', serif;
+  --font-body: 'Vinque', serif;
+}
+
+body {
+  background-image: url("/images/fondos/scaryBG.jpg");
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: var(--font-body);
+  color: #FFFEBD;
+}
+
+a, h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: #FFFEBD;
+  text-decoration: none;
+}
+
+input, label, p, span, li {
+  font-family: var(--font-body);
+}
+
+a:hover {
+  color: #d4af37;
+  text-shadow: 2px 2px 5px gray;
+}
+
+.titulo {
+  font-size: 30px;
+  font-family: "Rostock";
+  text-align: center;
+  padding: 20px 0;
+  color: #FFFEBD;
+}
+
+.textcont {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: #FFFEBD;
+}
+
+.content-area {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  min-height: 550px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.dnd-card {
+  background-color: rgba(24, 24, 24, 0.95);
+  border: 2px solid #d4af37;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.dnd-card-header {
+  border-bottom: 2px solid #d4af37;
+  color: #f5debb;
+  font-family: var(--font-body);
+  padding: 10px 15px;
+  font-size: 1.25rem;
+}
+
+.dnd-card-body {
+  padding: 15px;
+  color: #FFFEBD;
+}
+
+.dnd-input {
+  background-color: #1e1e1e;
+  color: #fefefe;
+  border: 1px solid #a57c47;
+  border-radius: 6px;
+}
+
+.dnd-input:focus {
+  box-shadow: 0 0 8px #c9a86b;
+  border-color: #c9a86b;
+  background-color: #1e1e1e;
+  color: #fefefe;
+}
+
+.dnd-btn {
+  font-family: 'Rostock', serif;
+  font-size: 20px;
+  background-color: rgba(165, 18, 23, 0.8);
+  color: #FFFEBD;
+  border: none;
+  padding: 8px 16px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+}
+
+.dnd-btn:hover {
+  box-shadow: 4px 4px 10px 4px #000000;
+  color: #FFFEBD;
+}
+
+.breadcrumb-item a {
+  color: #FFFEBD;
+}
+
+.breadcrumb-item.active {
+  color: greenyellow;
+}
+
+.carousel-img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.modal-content {
+  background-color: rgba(24, 24, 24, 0.95);
+  border: 2px solid #d4af37;
+  color: #FFFEBD;
+}
+
+.modal-header {
+  border-bottom: 1px solid #d4af37;
+}
+
+.modal-footer {
+  border-top: 1px solid #d4af37;
+}
+
+.btn-close {
+  filter: invert(1);
+}
+
+/* Accordion dark theme */
+.accordion-item {
+  background-color: rgba(24, 24, 24, 0.95);
+  border: 1px solid #d4af37;
+  color: #FFFEBD;
+}
+
+.accordion-button {
+  background-color: rgba(24, 24, 24, 0.95);
+  color: #FFFEBD;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  box-shadow: none;
+}
+
+.accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFFEBD'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: rgba(40, 40, 40, 0.95);
+  color: #d4af37;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+  border-color: #d4af37;
+}
+
+.accordion-body {
+  background-color: rgba(24, 24, 24, 0.95);
+  color: #FFFEBD;
+}
+
+.accordion-body p,
+.accordion-body li,
+.accordion-body a {
+  color: #FFFEBD;
+}
+
+.accordion-body a:hover {
+  color: #d4af37;
+}
+
+.howtoplay {
+  float: right;
+  padding: 5px;
+  width: 300px;
+  z-index: 100;
+  position: fixed;
+  top: 150px;
+  right: 0px;
+}
+
+.howtoplay h3 {
+  font-family: var(--font-heading);
+  color: #FFFEBD;
+}
+
+.howtoplay ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.howtoplay li a {
+  color: #FFFEBD;
+  font-size: 14px;
+}
+
+.howtoplay li a:hover {
+  color: #d4af37;
+}
+
+.sm-howtoplay {
+  display: none;
+  visibility: hidden;
+}
+
+.howtoplay-content {
+  transition: padding-right .2s;
+}
+
+@media only screen and (min-width: 1385px) {
+  .howtoplay-content {
+    padding-right: 320px;
+  }
+}
+
+@media only screen and not (min-width: 1385px) {
+  .howtoplay {
+    float: left;
+    top: 225px;
+    width: 300px;
+    padding: 5px;
+    right: 0px;
+    position: sticky;
+  }
+}
+
+@media only screen and not (min-width: 920px) {
+  .howtoplay {
+    float: left;
+    top: 225px;
+    width: 275px;
+    padding-top: 50px;
+    right: 0px;
+  }
+
+  .howtoplay li,
+  .sm-howtoplay li {
+    list-style: none;
+  }
+
+  .howtoplay ul,
+  .sm-howtoplay ul {
+    columns: 1;
+  }
+}
+
+@media only screen and not (min-width: 915px) {
+  .howtoplay {
+    visibility: hidden;
+    display: none;
+  }
+
+  .sm-howtoplay {
+    float: left;
+    display: flex;
+    visibility: visible;
+    top: 225px;
+    position: sticky;
+  }
+
+  .sm-howtoplay li {
+    list-style: none;
+  }
+
+  .sm-howtoplay ul {
+    columns: 1;
+  }
+}
+
+@media only screen and not (min-width: 875px) {
+  .howtoplay {
+    visibility: hidden;
+    display: none;
+  }
+
+  .sm-howtoplay {
+    visibility: hidden;
+    display: none;
+  }
+}
+
+/* Welcome (intro) page */
+.welcome-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #830202;
+  background: linear-gradient(0deg, #830202 5%, #c20929 55%, #d77e45 90%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.welcome-page #indexcontent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 500px;
+  max-width: 92%;
+  padding: 20px 25px;
+}
+
+.welcome-page #imgIndex {
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 15%;
+  animation: fadeIn 1.5s;
+}
+
+.welcome-page .title {
+  font-size: clamp(2rem, 8vw, 5rem);
+  text-align: center;
+  font-family: 'Alice';
+  text-shadow: 2px 3px grey;
+  animation: flash 2s;
+  animation-delay: 0.6s;
+  margin-top: 1rem;
+}
+
+.welcome-page .enter {
+  display: block;
+  margin: 2rem auto 0;
+  font-family: 'Rostock';
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  background: linear-gradient(0deg, #830202 15%, #c20929 40%, #d77e45 80%);
+  padding: 20px 40px;
+  cursor: pointer;
+  animation: fadeIn 5s;
+  box-shadow: 1px 1px #000000;
+  transition: box-shadow 0.5s ease-in-out;
+  border: none;
+  color: #FFFEBD;
+  border-radius: 8px;
+}
+
+.welcome-page .enter:hover {
+  box-shadow: 4px 4px 10px 4px #000000;
+  transition: box-shadow 0.5s ease-in-out;
+}
+
+/* Register form */
+.welcome-page #log {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 20px 50px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 254, 189, 0.2);
+}
+
+.welcome-page .logger {
+  display: block;
+  margin: 8px auto 18px;
+  height: 38px;
+  width: 260px;
+  background-color: #fff;
+  font-family: var(--font-body);
+  color: #222;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 15px;
+  transition: box-shadow 0.2s;
+}
+
+.welcome-page .logger:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #d4af37;
+}
+
+.welcome-page .labInput {
+  font-family: var(--font-body);
+  color: #FFFEBD;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.welcome-page .submitButton {
+  font-family: var(--font-body);
+  font-size: 18px;
+  background: linear-gradient(0deg, #830202 15%, #c20929 40%, #d77e45 80%);
+  padding: 4px 16px;
+  letter-spacing: 2px;
+  width: 110px;
+  height: 42px;
+  color: #FFFEBD;
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 8px 5px;
+  font-weight: 600;
+  transition: box-shadow 0.2s;
+}
+
+.welcome-page .submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.welcome-page .submitButton:hover:not(:disabled) {
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+#result {
+  color: #FFFEBD;
+  font-family: "Rostock";
+  font-size: 24px;
+  float: right;
+  padding: 40px;
+}
+
+.itemNav {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.itemNav:hover {
+  background: rgba(212, 175, 55, 0.15);
+}

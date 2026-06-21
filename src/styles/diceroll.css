@@ -1,0 +1,257 @@
+#stock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 1rem;
+}
+
+.die-stock {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: 1rem;
+  cursor: pointer;
+  font-size: 22px;
+  opacity: 0.2;
+  filter: blur(.5px);
+  transition: .1s;
+  color: #000;
+  text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+  font-weight: bold;
+}
+
+.die-stock:hover {
+  opacity: 0.8;
+  filter: blur(0);
+  font-size: 28px;
+}
+
+.die-stock > .icon-add {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0px 0px 3px 3px rgba(255,255,255,1);
+}
+
+#sound-toggle, #help-button {
+  width: 32px;
+  height: 32px;
+  margin: 1rem;
+  cursor: pointer;
+  opacity: 0.2;
+  filter: blur(.5px);
+  transition: .1s;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#sound-toggle:hover, #help-button:hover {
+  opacity: 0.8;
+  filter: blur(0);
+}
+
+#help-button {
+  background-image: url('/images/diceroll/icon-help.png');
+}
+
+#total {
+  display: none;
+  position: relative;
+  text-align: center;
+  width: 128px;
+  height: 128px;
+  font-size: 44px;
+  transition: .2s;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 4px dashed rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  color: #FFFEBD;
+}
+
+#table {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 2rem;
+  padding-top: 1rem;
+}
+
+.die {
+  position: relative;
+  text-align: center;
+  width: 128px;
+  height: 128px;
+  margin: .6rem;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 4px solid #fff;
+  font-size: 44px;
+  opacity: 0.5;
+  transition: .2s;
+  cursor: pointer;
+}
+
+.die:hover {
+  opacity: 0.8;
+}
+
+.die.active {
+  opacity: 0.8;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 4px dashed rgba(0, 0, 0, 0.3);
+}
+
+.rotatable {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.rotatable > .die-value,
+.rotatable > #total-value {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  text-shadow: -3px -2px 0 #fff, 3px -2px 0 #fff, -3px 2px 0 #fff, 3px 2px 0 #fff;
+  color: #000;
+  font-weight: bold;
+}
+
+.rotatable > .die-image {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: center;
+}
+
+.die-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.die .die-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.die-buttons > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  color: #000;
+  font-size: 40px;
+  font-weight: bold;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: .1s;
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: center;
+  z-index: 9999;
+  box-shadow: 0px 0px 2px 2px rgba(255,255,255,1);
+  cursor: pointer;
+}
+
+.die-buttons > div:hover {
+  width: 38px;
+  height: 38px;
+  box-shadow: 0px 0px 3px 3px rgba(255,255,255,1);
+}
+
+.die-buttons > div.btn-roll,
+.die-buttons > div.btn-roll-selected {
+  filter: grayscale(100%) brightness(125%);
+  background-image: url('/images/diceroll/icon-roll.png');
+}
+
+.die-buttons > div.btn-roll:hover,
+.die-buttons > div.btn-roll-selected:hover {
+  filter: grayscale(0%) brightness(100%);
+}
+
+@keyframes dice-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(720deg); }
+}
+
+.die.rolling .rotatable {
+  animation: dice-spin 1s ease-in-out;
+}
+
+.die.rolling .die-value {
+  opacity: 0.5;
+}
+
+.die.rolling .die-value.rolling-text {
+  font-size: 28px;
+}
+
+.die-buttons > div.btn-remove,
+.die-buttons > div.btn-remove-selected {
+  filter: grayscale(100%) brightness(175%);
+  background-image: url('/images/diceroll/icon-remove.png');
+}
+
+.die-buttons > div.btn-remove:hover,
+.die-buttons > div.btn-remove-selected:hover {
+  filter: grayscale(0%) brightness(100%);
+}
+
+#help {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+}
+
+#help > div {
+  width: 512px;
+  max-width: 95%;
+  padding: 2rem;
+  border: 2px solid #d4af37;
+  border-radius: 6px;
+  background-color: rgba(24, 24, 24, 0.95);
+  color: #FFFEBD;
+}
+
+#help > div a {
+  color: #d4af37;
+}
+
+#help > div > img {
+  width: 32px;
+}
+
+@media only screen and (max-width: 768px) {
+  .die-stock { width: 48px; height: 48px; }
+  .die { width: 96px; height: 96px; margin: .3rem; }
+}
