@@ -418,8 +418,16 @@ export default function AdminPanel() {
             <a
               style={{ cursor: 'pointer', color: '#d4af37', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '1rem' }}
               onClick={() => {
-                logout()
-                navigate('/principal')
+                Swal.fire({
+                  position: 'center',
+                  icon: 'success',
+                  title: user === 'root' ? 'Nos vemos mas tarde Admin' : 'Hasta pronto!',
+                  showConfirmButton: false,
+                  timer: 1500,
+                }).then(() => {
+                  logout()
+                  navigate('/principal')
+                })
               }}
             >
               <FontAwesomeIcon icon={faSignOutAlt} /> Cerrar sesion

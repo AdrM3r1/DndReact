@@ -1,4 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { useFont } from '../context/FontContext'
 import { Navbar, Nav, Container, Button } from 'react-bootstrap'
@@ -88,7 +89,18 @@ export default function NavBar() {
                   )}
                   <Button
                     variant="link"
-                    onClick={() => { logout(); navigate('/principal') }}
+                    onClick={() => {
+                      Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: isAdmin ? 'Nos vemos mas tarde Admin' : 'Hasta pronto!',
+                        showConfirmButton: false,
+                        timer: 1500,
+                      }).then(() => {
+                        logout()
+                        navigate('/principal')
+                      })
+                    }}
                     style={{ fontFamily: 'Rostock', color: '#FFFEBD', fontSize: 14, textDecoration: 'none' }}
                   >
                     Cerrar sesion

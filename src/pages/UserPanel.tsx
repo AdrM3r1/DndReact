@@ -153,8 +153,16 @@ export default function UserPanel() {
             <a
               style={{ cursor: 'pointer', color: '#d4af37' }}
               onClick={() => {
-                logout()
-                navigate('/principal')
+                Swal.fire({
+                  position: 'center',
+                  icon: 'success',
+                  title: user === 'root' ? 'Nos vemos mas tarde Admin' : 'Hasta pronto!',
+                  showConfirmButton: false,
+                  timer: 1500,
+                }).then(() => {
+                  logout()
+                  navigate('/principal')
+                })
               }}
             >
               Cerrar sesion
