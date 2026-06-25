@@ -18,13 +18,21 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [cpass, setCpass] = useState('')
+  const [validated, setValidated] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const allFilled = nick !== '' && email !== '' && pass !== '' && cpass !== ''
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    setValidated(true)
+
+    if (!nick || !email || !pass || !cpass) return
+
+    setSubmitting(true)
 
     if (pass !== cpass) {
+      setSubmitting(false)
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -43,6 +51,7 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
       const raw = localStorage.getItem('dnd_users') || '[]'
       const list = JSON.parse(raw)
       if (list.find((u: any) => u.nick === nick)) {
+        setSubmitting(false)
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -64,10 +73,12 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
       timer: 2000,
     })
 
+    setSubmitting(false)
     setNick('')
     setEmail('')
     setPass('')
     setCpass('')
+    setValidated(false)
     onHide()
     navigate('/principal')
   }
@@ -92,7 +103,7 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
           >*</span>
         </Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} noValidate>
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Label>Nick</Form.Label>
@@ -101,8 +112,10 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
               className="dnd-input"
               value={nick}
               onChange={e => setNick(e.target.value)}
+              isInvalid={validated && !nick}
               required
             />
+            <Form.Control.Feedback type="invalid">El nick es obligatorio</Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Correo Electr&oacute;nico</Form.Label>
@@ -111,8 +124,10 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
               className="dnd-input"
               value={email}
               onChange={e => setEmail(e.target.value)}
+              isInvalid={validated && !email}
               required
             />
+            <Form.Control.Feedback type="invalid">El correo es obligatorio</Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Contrase&ntilde;a</Form.Label>
@@ -121,8 +136,10 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
               className="dnd-input"
               value={pass}
               onChange={e => setPass(e.target.value)}
+              isInvalid={validated && !pass}
               required
             />
+            <Form.Control.Feedback type="invalid">La contraseña es obligatoria</Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Confirma Contrase&ntilde;a</Form.Label>
@@ -131,12 +148,17 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
               className="dnd-input"
               value={cpass}
               onChange={e => setCpass(e.target.value)}
+              isInvalid={validated && !cpass}
               required
             />
+            <Form.Control.Feedback type="invalid">Confirma la contraseña</Form.Control.Feedback>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" className="dnd-btn" disabled={!allFilled}>Enviar</Button>
+          <Button type="submit" className="dnd-btn" disabled={!allFilled || submitting}>
+            {submitting && <span className="btn-spinner" />}
+            Enviar
+          </Button>
           <div style={{ marginTop: 8, fontSize: 13 }}>
             <span
               onClick={() => { onHide(); onShowLogin?.() }}

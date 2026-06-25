@@ -16,10 +16,16 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
   const navigate = useNavigate()
   const [nick, setNick] = useState('')
   const [pass, setPass] = useState('')
+  const [validated, setValidated] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    setValidated(true)
 
+    if (!nick || !pass) return
+
+    setSubmitting(true)
     // Try API first
     const apiResult = await loginAPI(nick, pass)
     if (apiResult?.success) {
@@ -29,8 +35,10 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
       login(nick)
     }
 
+    setSubmitting(false)
     setNick('')
     setPass('')
+    setValidated(false)
     onHide()
     const isRoot = nick === 'root'
     Swal.fire({
@@ -49,7 +57,7 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
       <Modal.Header closeButton>
         <Modal.Title>Login</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} noValidate>
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Label>Nick</Form.Label>
@@ -58,8 +66,10 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
               className="dnd-input"
               value={nick}
               onChange={e => setNick(e.target.value)}
+              isInvalid={validated && !nick}
               required
             />
+            <Form.Control.Feedback type="invalid">El nick es obligatorio</Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Password</Form.Label>
@@ -68,12 +78,17 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
               className="dnd-input"
               value={pass}
               onChange={e => setPass(e.target.value)}
+              isInvalid={validated && !pass}
               required
             />
+            <Form.Control.Feedback type="invalid">La contraseña es obligatoria</Form.Control.Feedback>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" className="dnd-btn">Login</Button>
+          <Button type="submit" className="dnd-btn" disabled={submitting}>
+            {submitting && <span className="btn-spinner" />}
+            Login
+          </Button>
           <div style={{ marginTop: 8, fontSize: 13, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <span
               onClick={() => { onHide(); navigate('/recuperar-pass') }}

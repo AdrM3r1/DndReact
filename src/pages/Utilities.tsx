@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import DiceRoller from '../components/DiceRoller'
 import CoinFlip from '../components/CoinFlip'
+import InitiativeTracker from '../components/InitiativeTracker'
 
 interface ResourceLink {
   text: string
@@ -139,6 +140,8 @@ function showStoreInfo() {
 export default function Utilities() {
   return (
     <Container className="mt-4">
+      <Row>
+        <Col md={12}>
       <h2>Hoja para personajes</h2>
       <Row className="mb-4">
         <Col md={6}>
@@ -162,6 +165,9 @@ export default function Utilities() {
 
       <h2>Coin Flip</h2>
       <CoinFlip />
+
+      <hr />
+      <InitiativeTracker />
 
       <h2>Enlaces</h2>
       <Accordion>
@@ -206,6 +212,8 @@ export default function Utilities() {
           </ol>
         </nav>
       </div>
+        </Col>
+      </Row>
     </Container>
   )
 }

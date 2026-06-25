@@ -59,7 +59,14 @@ export interface CharacterData {
   nombre: string
   clase: string
   raza: string
+  subraza?: string
   nivel: number
+  fuerza?: number
+  destreza?: number
+  constitucion?: number
+  inteligencia?: number
+  sabiduria?: number
+  carisma?: number
   armorClass?: number
   hitPoints?: number
   hitDice?: string
@@ -67,6 +74,17 @@ export interface CharacterData {
   spells?: string
   invent?: string
   asociadoa?: string
+  trasfondo?: string
+  alineamiento?: string
+  competencias?: string
+  monedas_oro?: number
+  arma?: string
+  armadura?: string
+  preparedSpells?: string[]
+  usedSlots?: number[]
+  maxSlots?: number[]
+  xp?: number
+  classList?: { name: string; level: number }[]
 }
 
 export async function getCharactersAPI(user: string): Promise<CharacterData[] | null> {

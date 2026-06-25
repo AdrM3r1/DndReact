@@ -6,13 +6,25 @@ import { faUsers, faDiceD20, faCalendarDay, faDatabase, faArrowLeft, faSignOutAl
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { getAllCharactersAPI, getUsersAPI, deleteUserAPI } from '../services/api'
+import AnimatedCounter from '../components/AnimatedCounter'
+import Skeleton, { SkeletonTable } from '../components/Skeleton'
 
 interface Character {
   id: number | undefined
   nombre: string
   clase: string
   raza: string
+  subraza?: string
   nivel: number
+  classList?: { name: string; level: number }[]
+  fuerza?: number
+  destreza?: number
+  constitucion?: number
+  inteligencia?: number
+  sabiduria?: number
+  carisma?: number
+  armorClass?: number
+  hitPoints?: number
   asociadoa: string
   fecha?: string
 }
@@ -32,6 +44,7 @@ export default function AdminPanel() {
   const [selectedLog, setSelectedLog] = useState<Set<number>>(new Set())
   const [cleanAmount, setCleanAmount] = useState(30)
   const [cleanUnit, setCleanUnit] = useState<'dias' | 'meses' | 'anyos'>('dias')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (user !== 'root') {
@@ -40,6 +53,7 @@ export default function AdminPanel() {
     }
 
     async function load() {
+      setLoading(true)
       // Try API first for all chars
       const apiChars = await getAllCharactersAPI()
       if (apiChars) {
@@ -69,6 +83,7 @@ export default function AdminPanel() {
       if (storedLog) {
         setCharLog(JSON.parse(storedLog))
       }
+      setLoading(false)
     }
 
     load()
@@ -124,7 +139,7 @@ export default function AdminPanel() {
             <Card.Body className="d-flex align-items-center gap-3">
               <FontAwesomeIcon icon={faUsers} size="2x" style={{ color: '#d4af37' }} />
               <div style={{ color: '#FFFEBD' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}>{users.length}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}><AnimatedCounter value={users.length} /></div>
                 <small>Usuarios</small>
               </div>
             </Card.Body>
@@ -135,7 +150,7 @@ export default function AdminPanel() {
             <Card.Body className="d-flex align-items-center gap-3">
               <FontAwesomeIcon icon={faDiceD20} size="2x" style={{ color: '#d4af37' }} />
               <div style={{ color: '#FFFEBD' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}>{allChars.length}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}><AnimatedCounter value={allChars.length} /></div>
                 <small>Personajes</small>
               </div>
             </Card.Body>
@@ -146,7 +161,7 @@ export default function AdminPanel() {
             <Card.Body className="d-flex align-items-center gap-3">
               <FontAwesomeIcon icon={faCalendarDay} size="2x" style={{ color: '#d4af37' }} />
               <div style={{ color: '#FFFEBD' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}>{todayCount}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}><AnimatedCounter value={todayCount} /></div>
                 <small>Creados hoy</small>
               </div>
             </Card.Body>
@@ -177,37 +192,57 @@ export default function AdminPanel() {
                 <th>Clase</th>
                 <th>Raza</th>
                 <th>Nivel</th>
+                <th>FUE</th>
+                <th>DES</th>
+                <th>CON</th>
+                <th>INT</th>
+                <th>SAB</th>
+                <th>CAR</th>
                 <th>Propietario</th>
-                <th>Editar</th>
-                <th>Borrar</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {allChars.length === 0 ? (
+              {loading ? (
                 <tr>
-                  <td colSpan={7} className="textcont">No hay personajes registrados.</td>
+                  <td colSpan={12} style={{ padding: '20px' }}>
+                    <SkeletonTable rows={4} cols={5} />
+                  </td>
+                </tr>
+              ) : allChars.length === 0 ? (
+                <tr>
+                  <td colSpan={12} className="textcont">No hay personajes registrados.</td>
                 </tr>
               ) : (
                 allChars.map(c => (
                   <tr className="character" key={c.id}>
-                    <td>{c.nombre}</td>
+                    <td><Link to={`/usuario/ver/${c.id}`} style={{ color: '#d4af37' }}>{c.nombre}</Link></td>
                     <td>{c.clase}</td>
-                    <td>{c.raza}</td>
-                    <td>{c.nivel}</td>
+                    <td>{c.raza}{c.subraza ? ` (${c.subraza})` : ''}</td>
+                    <td>{c.classList && c.classList.length > 1 ? c.classList.reduce((s, e) => s + e.level, 0) : c.nivel}</td>
+                    <td>{c.fuerza ?? '—'}</td>
+                    <td>{c.destreza ?? '—'}</td>
+                    <td>{c.constitucion ?? '—'}</td>
+                    <td>{c.inteligencia ?? '—'}</td>
+                    <td>{c.sabiduria ?? '—'}</td>
+                    <td>{c.carisma ?? '—'}</td>
                     <td>{c.asociadoa}</td>
                     <td>
-                      <a style={{ cursor: 'pointer' }} onClick={() => navigate(`/usuario/editar/${c.id}`)}>
-                        Edit
-                      </a>
-                    </td>
-                    <td>
-                      <a style={{ cursor: 'pointer', color: 'red' }} onClick={() => {
-                        const updated = allChars.filter(x => x.id !== c.id)
-                        setAllChars(updated)
-                        localStorage.setItem('dnd_all_chars', JSON.stringify(updated))
-                      }}>
-                        Borrar
-                      </a>
+                      <div className="d-flex gap-2">
+                        <Link to={`/usuario/ver/${c.id}`} style={{ color: '#d4af37' }} title="Ver ficha">
+                          <FontAwesomeIcon icon={faEye} />
+                        </Link>
+                        <a style={{ cursor: 'pointer' }} onClick={() => navigate(`/usuario/editar/${c.id}`)} title="Editar">
+                          <FontAwesomeIcon icon={faEdit} />
+                        </a>
+                        <a style={{ cursor: 'pointer', color: 'red' }} onClick={() => {
+                          const updated = allChars.filter(x => x.id !== c.id)
+                          setAllChars(updated)
+                          localStorage.setItem('dnd_all_chars', JSON.stringify(updated))
+                        }} title="Borrar">
+                          <FontAwesomeIcon icon={faTrash} />
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -316,7 +351,13 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody>
-              {sortedLog.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '20px' }}>
+                    <SkeletonTable rows={3} cols={4} />
+                  </td>
+                </tr>
+              ) : sortedLog.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="textcont">Sin registros.</td>
                 </tr>
@@ -342,7 +383,7 @@ export default function AdminPanel() {
                     <td>{c.asociadoa}</td>
                     <td>{c.nombre}</td>
                     <td>{c.clase}</td>
-                    <td>{c.raza}</td>
+                    <td>{c.raza}{c.subraza ? ` (${c.subraza})` : ''}</td>
                     <td>{c.nivel}</td>
                     <td>{c.fecha || '—'}</td>
                   </tr>
@@ -389,7 +430,13 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody>
-              {users.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={2} style={{ padding: '20px' }}>
+                    <SkeletonTable rows={2} cols={2} />
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="textcont">No hay usuarios registrados.</td>
                 </tr>

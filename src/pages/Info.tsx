@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Container, Row, Col, Carousel, Accordion } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import Lightbox from '../components/Lightbox'
 
 interface Edition {
   title: string
@@ -54,8 +56,12 @@ lanzo esta Quinta edicion en 2017.`,
 ]
 
 export default function Info() {
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null)
+
   return (
     <Container className="mt-4">
+      {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+
       <h2>Historia</h2>
       <Row className="justify-content-md-start">
         <Col md={12}>
@@ -77,6 +83,8 @@ export default function Info() {
                 className="d-block w-100 carousel-img"
                 src="/images/galeria/800/WallpaperDog-21_1200x800.png"
                 alt="Aventureros"
+                onClick={() => setLightbox({ src: '/images/galeria/800/WallpaperDog-21_1200x800.png', alt: 'Aventureros' })}
+                style={{ cursor: 'pointer' }}
               />
             </Carousel.Item>
             <Carousel.Item interval={6000}>
@@ -84,6 +92,8 @@ export default function Info() {
                 className="d-block w-100 carousel-img"
                 src="/images/galeria/800/baldurs32_1201x800.png"
                 alt="Baldurs Gate 3"
+                onClick={() => setLightbox({ src: '/images/galeria/800/baldurs32_1201x800.png', alt: 'Baldurs Gate 3' })}
+                style={{ cursor: 'pointer' }}
               />
             </Carousel.Item>
             <Carousel.Item interval={6000}>
@@ -91,6 +101,8 @@ export default function Info() {
                 className="d-block w-100 carousel-img"
                 src="/images/galeria/800/DnDHEL_1024_682_1200x800.png"
                 alt="DnD Honor entre ladrones"
+                onClick={() => setLightbox({ src: '/images/galeria/800/DnDHEL_1024_682_1200x800.png', alt: 'DnD Honor entre ladrones' })}
+                style={{ cursor: 'pointer' }}
               />
             </Carousel.Item>
             <Carousel.Item interval={6000}>
@@ -98,6 +110,8 @@ export default function Info() {
                 className="d-block w-100 carousel-img"
                 src="/images/galeria/800/WallpaperDog-32_1200x800.png"
                 alt="Combate dragon"
+                onClick={() => setLightbox({ src: '/images/galeria/800/WallpaperDog-32_1200x800.png', alt: 'Combate dragon' })}
+                style={{ cursor: 'pointer' }}
               />
             </Carousel.Item>
             <Carousel.Item interval={6000}>
@@ -105,6 +119,8 @@ export default function Info() {
                 className="d-block w-100 carousel-img"
                 src="/images/galeria/800/DND-serie-animada_1200x800.png"
                 alt="Serie animada"
+                onClick={() => setLightbox({ src: '/images/galeria/800/DND-serie-animada_1200x800.png', alt: 'Serie animada' })}
+                style={{ cursor: 'pointer' }}
               />
             </Carousel.Item>
           </Carousel>

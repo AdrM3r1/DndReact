@@ -88,11 +88,14 @@ export default function DiceRoller() {
                 className="die-image"
                 style={{ backgroundImage: `url(/images/diceroll/d${d.type}.png)` }}
               />
-              <div className={`die-value ${d.rolling ? 'rolling-text' : ''}`}>{d.value}</div>
+                            <div className={`die-value ${d.rolling ? 'rolling-text' : ''}`}>{d.value}</div>
             </div>
+            <div className="die-tooltip">d{d.type}: {d.value}</div>
             <div className="die-buttons" style={{ display: hoveredId === d.id ? 'flex' : 'none' }}>
               <div
                 className="btn-roll"
+
+
                 title="Roll this die!"
                 onClick={e => { e.stopPropagation(); rollDie(d.id) }}
               />

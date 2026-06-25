@@ -2,9 +2,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { useFont } from '../context/FontContext'
+import { useTheme } from '../context/ThemeContext'
+import { useScrollHide } from '../hooks/useScrollHide'
 import { Navbar, Nav, Container, Button } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFont, faShieldAlt } from '@fortawesome/free-solid-svg-icons'
+import { faFont, faShieldAlt, faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import LoginModal from './LoginModal'
 import RegisterModal from './RegisterModal'
@@ -14,9 +16,11 @@ export default function NavBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const { mode, toggle } = useFont()
+  const { mode: themeMode, toggle: toggleTheme } = useTheme()
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [logoImg, setLogoImg] = useState('')
+  const hidden = useScrollHide()
 
   useEffect(() => {
     if (window.innerWidth > 720) {
@@ -29,7 +33,17 @@ export default function NavBar() {
 
   return (
     <>
-      <Navbar expand="lg" variant="dark" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+      <Navbar expand="lg" variant="dark" style={{
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        transition: 'transform 0.3s ease',
+        transform: hidden ? 'translateY(-100%)' : 'translateY(0)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+      }}>
         <Container>
           {logoImg && (
             <Navbar.Brand>
@@ -38,10 +52,20 @@ export default function NavBar() {
           )}
           <div className="d-flex align-items-center ms-auto" style={{ gap: '8px' }}>
             <Button
+              onClick={toggleTheme}
+              variant="outline-warning"
+              size="sm"
+              style={{ borderColor: '#d4af37', background: 'rgba(0,0,0,0.3)' }}
+              title={`Cambiar a modo ${themeMode === 'dark' ? 'claro' : 'oscuro'}`}
+              aria-label="Alternar tema"
+            >
+              <FontAwesomeIcon icon={themeMode === 'dark' ? faSun : faMoon} />
+            </Button>
+            <Button
               onClick={toggle}
               variant="outline-warning"
               size="sm"
-              style={{ borderColor: '#d4af37', position: 'relative' }}
+              style={{ borderColor: '#d4af37', position: 'relative', background: 'rgba(0,0,0,0.3)' }}
               title={`Fuente actual: ${mode === 'vinque' ? 'Vinque' : 'Cardo'}. Click para cambiar.`}
               aria-label="Alternar fuente de accesibilidad lectora"
             >
@@ -65,10 +89,10 @@ export default function NavBar() {
           </div>
           <Navbar.Collapse id="main-nav">
             <Nav className="ms-auto" style={{ fontFamily: 'Rostock', fontSize: 20 }}>
-              <Nav.Link as={Link} to="/principal">Home</Nav.Link>
-              <Nav.Link as={Link} to="/info">Informacion</Nav.Link>
-              <Nav.Link as={Link} to="/como-jugar">Como Jugar</Nav.Link>
-              <Nav.Link as={Link} to="/utilidades">Herramientas</Nav.Link>
+              <Nav.Link as={Link} to="/principal" className={location.pathname === '/principal' ? 'active-link' : ''}>Home</Nav.Link>
+              <Nav.Link as={Link} to="/info" className={location.pathname === '/info' ? 'active-link' : ''}>Informacion</Nav.Link>
+              <Nav.Link as={Link} to="/como-jugar" className={location.pathname === '/como-jugar' ? 'active-link' : ''}>Como Jugar</Nav.Link>
+              <Nav.Link as={Link} to="/utilidades" className={location.pathname === '/utilidades' ? 'active-link' : ''}>Herramientas</Nav.Link>
               {!isAdmin && !isLoggedIn && (
                 <Nav.Link onClick={() => setShowRegister(true)} style={{ cursor: 'pointer' }}>
                   Registrate
@@ -80,9 +104,9 @@ export default function NavBar() {
                 </Nav.Link>
               ) : (
                 <>
-                  <Nav.Link as={Link} to="/usuario">Mi cuenta</Nav.Link>
+                  <Nav.Link as={Link} to="/usuario" className={location.pathname === '/usuario' ? 'active-link' : ''}>Mi cuenta</Nav.Link>
                   {isAdmin && (
-                    <Nav.Link as={Link} to="/admin">
+                    <Nav.Link as={Link} to="/admin" className={location.pathname === '/admin' ? 'active-link' : ''}>
                       <FontAwesomeIcon icon={faShieldAlt} style={{ marginRight: 4 }} />
                       Admin
                     </Nav.Link>
@@ -101,7 +125,7 @@ export default function NavBar() {
                         navigate('/principal')
                       })
                     }}
-                    style={{ fontFamily: 'Rostock', color: '#FFFEBD', fontSize: 14, textDecoration: 'none' }}
+                    style={{ fontFamily: 'Rostock', color: '#FFFEBD', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
                   >
                     Cerrar sesion
                   </Button>
