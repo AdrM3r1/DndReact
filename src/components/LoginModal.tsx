@@ -4,6 +4,7 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { loginAPI } from '../services/api'
+import { COLORS } from '../theme/colors'
 
 interface LoginModalProps {
   show: boolean
@@ -26,25 +27,50 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
     if (!nick || !pass) return
 
     setSubmitting(true)
+
     // Try API first
     const apiResult = await loginAPI(nick, pass)
     if (apiResult?.success) {
-      login(apiResult.user)
-    } else {
-      // Fallback: localStorage mode
-      login(nick)
+      // API login successful
+      login(apiResult.user, apiResult.token)
+      finishLogin(apiResult.user)
+      return
     }
 
+    // No fallback — login requires database
+    if (apiResult === null) {
+      setSubmitting(false)
+      Swal.fire({
+        icon: 'warning',
+        title: 'Servidor no disponible',
+        text: 'No se pudo conectar con el servidor. Intentalo mas tarde.',
+        confirmButtonColor: COLORS.danger,
+      })
+      return
+    }
+
+    // Login failed
+    setSubmitting(false)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Nick o contrasena incorrectos',
+      confirmButtonColor: COLORS.danger,
+    })
+  }
+
+  function finishLogin(username: string) {
     setSubmitting(false)
     setNick('')
     setPass('')
     setValidated(false)
     onHide()
-    const isRoot = nick === 'root'
+
+    const isRoot = username === 'root'
     Swal.fire({
       position: 'center',
       icon: 'success',
-      title: isRoot ? 'Bienvenido administrador' : `Bienvenido ${nick}`,
+      title: isRoot ? 'Bienvenido administrador' : `Bienvenido ${username}`,
       showConfirmButton: false,
       timer: 2000,
     }).then(() => {
@@ -92,11 +118,11 @@ export default function LoginModal({ show, onHide, onShowRegister }: LoginModalP
           <div style={{ marginTop: 8, fontSize: 13, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <span
               onClick={() => { onHide(); navigate('/recuperar-pass') }}
-              style={{ color: '#d4af37', cursor: 'pointer' }}
+              style={{ color: 'var(--color-gold)', cursor: 'pointer' }}
             >¿Olvidaste la contraseña?</span>
             <span
               onClick={() => { onHide(); onShowRegister?.() }}
-              style={{ color: '#d4af37', cursor: 'pointer' }}
+              style={{ color: 'var(--color-gold)', cursor: 'pointer' }}
             >¿No tienes cuenta? Regístrate</span>
           </div>
         </Modal.Footer>

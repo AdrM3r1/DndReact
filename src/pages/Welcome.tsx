@@ -5,7 +5,7 @@ export default function Welcome() {
   return (
     <div className="welcome-page">
       <div id="indexcontent">
-        <img id="imgIndex" src="/images/dndMinimal-removebg-preview-cropped.png" alt="" />
+        <img id="imgIndex" src="/images/dndMinimal-removebg-preview-cropped.png" alt="The Iris of the Beholder" />
         <div>
           <h2 className="title">The Iris of The Beholder</h2>
           <button className="enter" onClick={() => navigate('/principal')}>

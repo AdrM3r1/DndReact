@@ -1,15 +1,34 @@
 const API_BASE = '/api'
 const TIMEOUT = 4000
 
+const TOKEN_KEY = 'dnd_jwt_token'
+
+export function getStoredToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY)
+}
+
+export function setStoredToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token)
+}
+
+export function clearStoredToken(): void {
+  localStorage.removeItem(TOKEN_KEY)
+}
+
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T | null> {
   try {
+    const token = getStoredToken()
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options?.headers as Record<string, string> || {}),
+    }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
     const res = await fetch(`${API_BASE}${url}`, {
       ...options,
       signal: AbortSignal.timeout(TIMEOUT),
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.headers || {}),
-      },
+      headers,
     })
     if (!res.ok) return null
     return await res.json()
@@ -23,7 +42,7 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T | null
 export async function loginAPI(
   nick: string,
   pass: string
-): Promise<{ success: boolean; user: string; isAdmin: boolean } | null> {
+): Promise<{ success: boolean; user: string; isAdmin: boolean; token?: string } | null> {
   return apiFetch('/login.php', {
     method: 'POST',
     body: JSON.stringify({ nick, pass }),
@@ -35,7 +54,7 @@ export async function registerAPI(
   email: string,
   password: string,
   cpass: string
-): Promise<{ success: boolean; user: string } | null> {
+): Promise<{ success: boolean; user: string; token?: string } | null> {
   return apiFetch('/register.php', {
     method: 'POST',
     body: JSON.stringify({ nick, email, password, cpass }),

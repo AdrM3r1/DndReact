@@ -2,9 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import LoginModal from '../components/LoginModal'
+import { registerAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
+import { COLORS } from '../theme/colors'
 
 export default function RegisterForm() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [nick, setNick] = useState('')
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
@@ -13,17 +17,67 @@ export default function RegisterForm() {
 
   const allFilled = nick !== '' && email !== '' && pass !== '' && cpass !== ''
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: `Bienvenido ${nick}`,
-      showConfirmButton: false,
-      timer: 2000,
-    }).then(() => {
-      navigate('/principal')
-    })
+
+    if (pass !== cpass) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Las contraseñas no coinciden',
+        confirmButtonColor: COLORS.danger,
+      })
+      return
+    }
+
+    try {
+      const apiResult = await registerAPI(nick, email, pass, cpass)
+      if (apiResult?.success) {
+        login(apiResult.user, apiResult.token)
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: `Bienvenido ${nick}`,
+          showConfirmButton: false,
+          timer: 2000,
+        }).then(() => {
+          navigate('/principal')
+        })
+      } else {
+        // Fallback: localStorage mode
+        const raw = localStorage.getItem('dnd_users') || '[]'
+        let list: any[] = []
+        try { list = JSON.parse(raw) } catch { list = [] }
+        if (list.find((u: any) => u.nick === nick)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'El nick ya existe',
+            confirmButtonColor: COLORS.danger,
+          })
+          return
+        }
+        list.push({ id: Date.now(), nick })
+        localStorage.setItem('dnd_users', JSON.stringify(list))
+        login(nick)
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: `Bienvenido ${nick}`,
+          showConfirmButton: false,
+          timer: 2000,
+        }).then(() => {
+          navigate('/principal')
+        })
+      }
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al registrar. Intenta de nuevo.',
+        confirmButtonColor: COLORS.danger,
+      })
+    }
   }
 
   function showInfo() {
@@ -31,7 +85,7 @@ export default function RegisterForm() {
       icon: 'info',
       title: 'Info',
       text: 'Enviar se desbloqueara cuando los campos esten rellenos',
-      confirmButtonColor: '#d4af37',
+      confirmButtonColor: COLORS.gold,
     })
   }
 
@@ -39,15 +93,15 @@ export default function RegisterForm() {
     <div className="welcome-page">
       <div id="indexcontent">
         <div id="log">
-          <h3 style={{ color: '#FFFEBD', margin: '0 0 15px', textDecoration: 'underline', textDecorationThickness: 2, fontSize: '1.5rem' }}>
+          <h3 style={{ color: 'var(--color-cream)', margin: '0 0 15px', textDecoration: 'underline', textDecorationThickness: 2, fontSize: '1.5rem' }}>
             Registro
             <span
               onClick={showInfo}
-              style={{ cursor: 'pointer', color: '#d4af37' }}
+              style={{ cursor: 'pointer', color: 'var(--color-gold)' }}
             >*</span>
           </h3>
           <form onSubmit={handleSubmit} id="registro">
-            <label className="labInput"><center>Nick</center></label>
+            <label className="labInput"><span style={{ textAlign: 'center', display: 'block' }}>Nick</span></label>
             <input className="logger" type="text" value={nick} onChange={e => setNick(e.target.value)} />
             <label className="labInput">Correo Electronico</label>
             <input className="logger" type="email" value={email} onChange={e => setEmail(e.target.value)} />

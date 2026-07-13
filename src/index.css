@@ -3,16 +3,19 @@
 @font-face {
   font-family: 'Rostock';
   src: url('/fonts/Rostock_Kaligraph.ttf');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Vinque';
   src: url('/fonts/vinque.otf');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Alice';
   src: url('/fonts/Alice_in_Wonderland.ttf');
+  font-display: swap;
 }
 
 @font-face {
@@ -20,6 +23,7 @@
   src: url('/fonts/cinzel_decorative/CinzelDecorative-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -27,11 +31,13 @@
   src: url('/fonts/cinzel_decorative/CinzelDecorative-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Berkshire Swash';
   src: url('/fonts/berkshire_swash/BerkshireSwash-Regular.woff2') format('woff2');
+  font-display: swap;
 }
 
 @font-face {
@@ -39,6 +45,7 @@
   src: url('/fonts/cardo/Cardo-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -46,6 +53,7 @@
   src: url('/fonts/cardo/Cardo-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -53,6 +61,7 @@
   src: url('/fonts/cardo/Cardo-Italic.woff2') format('woff2');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @keyframes fadeIn {
@@ -84,12 +93,35 @@
 }
 
 @keyframes page-enter {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .page-enter {
-  animation: page-enter 0.3s ease-out;
+  animation: page-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fade-in-scale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in-scale {
+  animation: fade-in-scale 0.3s ease-out both;
+}
+
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @view-transition {
@@ -137,6 +169,24 @@ html {
   --input-bg: #2a2a2a;
   --input-text: #FFFEBD;
   --input-border: rgba(212, 175, 55, 0.3);
+  --color-green: #4caf50;
+  --color-blue: #4a7dc9;
+  --color-purple: #9c27b0;
+  --color-grey: #aaa;
+  --color-danger: #d33;
+  --color-gold-15: rgba(212, 175, 55, 0.15);
+  --color-gold-20: rgba(212, 175, 55, 0.2);
+  --color-gold-50: rgba(212, 175, 55, 0.5);
+  --color-black-30: rgba(0, 0, 0, 0.3);
+  --color-black-60: rgba(0, 0, 0, 0.6);
+  --color-black-70: rgba(0, 0, 0, 0.7);
+  --color-white-20: rgba(255, 255, 255, 0.2);
+  --color-white-85: rgba(255, 255, 255, 0.85);
+  --color-cream-30: rgba(255, 254, 189, 0.3);
+  --color-red-40: rgba(255, 0, 0, 0.4);
+  --color-type-marrial: #e57373;
+  --color-type-mago: #64b5f6;
+  --color-type-hibrido: #ffb74d;
 }
 
 [data-theme="light"] {
@@ -160,6 +210,24 @@ html {
   --input-bg: #ffffff;
   --input-text: #2c2c2c;
   --input-border: rgba(184, 134, 11, 0.3);
+  --color-green: #388e3c;
+  --color-blue: #3367a3;
+  --color-purple: #7b1fa2;
+  --color-grey: #666;
+  --color-danger: #cc0000;
+  --color-gold-15: rgba(184, 134, 11, 0.12);
+  --color-gold-20: rgba(184, 134, 11, 0.15);
+  --color-gold-50: rgba(184, 134, 11, 0.4);
+  --color-black-30: rgba(0, 0, 0, 0.15);
+  --color-black-60: rgba(0, 0, 0, 0.35);
+  --color-black-70: rgba(0, 0, 0, 0.45);
+  --color-white-20: rgba(0, 0, 0, 0.08);
+  --color-white-85: rgba(0, 0, 0, 0.75);
+  --color-cream-30: rgba(44, 44, 44, 0.2);
+  --color-red-40: rgba(204, 0, 0, 0.3);
+  --color-type-marrial: #c62828;
+  --color-type-mago: #1565c0;
+  --color-type-hibrido: #e65100;
 }
 
 body {
@@ -234,9 +302,9 @@ a:hover {
     radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 50%, rgba(131, 2, 2, 0.1) 0%, transparent 50%),
     var(--bg-overlay);
-  padding: 15px;
+  padding: 15px 5px;
   min-height: 550px;
-  width: 95%;
+  width: 97%;
   margin: 0 auto;
   border-radius: 12px;
   box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.3);
@@ -280,6 +348,9 @@ a:hover {
   border: 1px solid var(--input-border, rgba(165, 124, 71, 0.4));
   border-radius: 8px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.3s, color 0.3s;
+  min-height: 42px;
+  padding: 8px 12px;
+  font-size: 1rem;
 }
 
 .dnd-input:focus {
@@ -774,10 +845,11 @@ input.dnd-input:-internal-autofill-selected {
 }
 
 .init-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   opacity: 0.7;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-bottom: 2px;
 }
 
 .init-row {
@@ -982,7 +1054,7 @@ input.dnd-input:-internal-autofill-selected {
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid rgba(212, 175, 55, 0.1);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 14px 16px;
   height: 100%;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -1002,31 +1074,32 @@ input.dnd-input:-internal-autofill-selected {
 
 .shop-item-name {
   font-family: var(--font-heading);
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--color-gold);
 }
 
 .shop-item-cost {
   font-family: var(--font-heading);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--color-cream);
   white-space: nowrap;
   opacity: 0.8;
 }
 
 .shop-item-desc {
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   opacity: 0.7;
-  margin: 0 0 6px;
-  line-height: 1.35;
+  margin: 0 0 10px;
+  line-height: 1.5;
 }
 
 .shop-item-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
-  font-size: 0.7rem;
-  opacity: 0.5;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  opacity: 0.45;
 }
 
 /* ===== User Panel tabs (Jugador / DM) ===== */
@@ -1045,7 +1118,7 @@ input.dnd-input:-internal-autofill-selected {
 
 /* ===== DM Section inside UserPanel ===== */
 .dm-section {
-  max-width: 900px;
+  max-width: 100%;
 }
 
 .dm-tabs {
@@ -2095,6 +2168,28 @@ input.dnd-input:-internal-autofill-selected {
   background: rgba(212, 175, 55, 0.1);
 }
 
+/* Stagger animation for lists */
+.stagger-child:nth-child(1) { animation-delay: 0.05s; }
+.stagger-child:nth-child(2) { animation-delay: 0.1s; }
+.stagger-child:nth-child(3) { animation-delay: 0.15s; }
+.stagger-child:nth-child(4) { animation-delay: 0.2s; }
+.stagger-child:nth-child(5) { animation-delay: 0.25s; }
+.stagger-child:nth-child(6) { animation-delay: 0.3s; }
+.stagger-child:nth-child(7) { animation-delay: 0.35s; }
+.stagger-child:nth-child(8) { animation-delay: 0.4s; }
+
+/* Skeleton loading pulse */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--input-bg) 25%, rgba(212,175,55,0.08) 50%, var(--input-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .class-grid {
@@ -2131,6 +2226,171 @@ input.dnd-input:-internal-autofill-selected {
   .howtoplay-sidebar a.spy-active {
     border-left: none;
     border-bottom: 2px solid var(--accent, var(--color-gold));
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Focus states for accessibility */
+.dnd-btn:focus-visible,
+.dnd-tab:focus-visible,
+.dm-tab:focus-visible,
+.init-btn-sm:focus-visible,
+.init-btn-hp:focus-visible,
+.type-filter-btn:focus-visible,
+.subrace-toggle:focus-visible,
+.desc-toggle:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Small laptops (≤ 1280px) */
+@media (max-width: 1280px) {
+  .content-area {
+    width: 98%;
+  }
+  .character-sheet {
+    max-width: 90%;
+  }
+}
+
+/* Standard laptops (≤ 1366px) */
+@media (max-width: 1366px) {
+  .howtoplay {
+    width: 260px;
+  }
+}
+
+/* Medium desktops (≤ 1440px) */
+@media (max-width: 1440px) {
+  .content-area {
+    width: 97%;
+  }
+  .character-sheet {
+    max-width: 85%;
+  }
+  .dm-section {
+    max-width: 100%;
+  }
+}
+
+/* Large displays (≥ 1441px) — constrain for readability */
+@media (min-width: 1441px) {
+  .content-area {
+    max-width: 1400px;
+    width: 97%;
+  }
+  .character-sheet {
+    max-width: 900px;
+  }
+  .dm-section {
+    max-width: 100%;
+  }
+  .shop-page {
+    max-width: 1200px;
+  }
+}
+
+/* Full HD / QHD (≥ 1920px) */
+@media (min-width: 1920px) {
+  .content-area {
+    max-width: 1400px;
+  }
+  .character-sheet {
+    max-width: 1000px;
+  }
+  .class-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  .race-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  .spell-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+/* 2K / QHD+ (≥ 2560px) */
+@media (min-width: 2560px) {
+  .content-area {
+    max-width: 1600px;
+  }
+  .class-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  .race-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
+
+/* Tables responsive for AdminPanel */
+@media (max-width: 1200px) {
+  .admin-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* HowToPlay sidebar fix for mid-range */
+@media (max-width: 1100px) {
+  .howtoplay {
+    position: static;
+    width: 100%;
+    float: none;
+    margin-bottom: 1rem;
+  }
+  .howtoplay ul {
+    columns: 2;
+  }
+}
+
+/* Coin responsive */
+@media (max-width: 768px) {
+  .coin {
+    width: 80px;
+    height: 80px;
+  }
+  .coin-heads, .coin-tails {
+    font-size: 1.5rem;
+  }
+  .character-sheet {
+    max-width: 100%;
+  }
+  .cs-name {
+    font-size: 1.4rem;
+  }
+  .cs-stat-value {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-page #log {
+    padding: 18px 20px;
+  }
+  .welcome-page .logger {
+    width: 100%;
+    max-width: 260px;
+  }
+  .dm-tabs {
+    flex-wrap: wrap;
+  }
+  .dm-tab {
+    flex: none;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+  .user-main-tabs {
+    max-width: 100%;
+  }
+  .cs-actions {
+    flex-direction: column;
+  }
+  .cs-actions .dnd-btn {
+    width: 100%;
+    text-align: center;
   }
 }
 

@@ -4,10 +4,11 @@ import { Container, Row, Col, Table, Form } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { getCharactersAPI, deleteCharacterAPI } from '../services/api'
-import Skeleton, { SkeletonTable } from '../components/Skeleton'
+import { SkeletonTable } from '../components/Skeleton'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faDownload, faUpload, faEye, faEdit, faTrash, faUser, faSkull } from '@fortawesome/free-solid-svg-icons'
 import DMSection from '../components/DMSection'
+import { COLORS } from '../theme/colors'
 
 interface Character {
   id: number | undefined
@@ -62,7 +63,7 @@ export default function UserPanel() {
 
       const stored = localStorage.getItem(`dnd_chars_${user}`)
       if (stored) {
-        setChars(JSON.parse(stored))
+        try { setChars(JSON.parse(stored)) } catch { setChars([]) }
       }
       setLoading(false)
     }
@@ -87,7 +88,7 @@ export default function UserPanel() {
       title: 'Borrar personaje?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
+      confirmButtonColor: COLORS.danger,
       confirmButtonText: 'Borrar',
       cancelButtonText: 'Cancelar',
     })
@@ -104,7 +105,8 @@ export default function UserPanel() {
       const allKey = 'dnd_all_chars'
       const allStored = localStorage.getItem(allKey)
       if (allStored) {
-        const allChars = JSON.parse(allStored).filter((c: any) => c.id !== id)
+        let allChars: any[] = []
+        try { allChars = JSON.parse(allStored).filter((c: any) => c.id !== id) } catch { allChars = [] }
         localStorage.setItem(allKey, JSON.stringify(allChars))
       }
     }
@@ -122,7 +124,10 @@ export default function UserPanel() {
     a.href = url
     a.download = `dnd_personajes_${user}.json`
     a.click()
-    URL.revokeObjectURL(url)
+    setTimeout(() => {
+      URL.revokeObjectURL(url)
+      a.remove()
+    }, 100)
   }
 
   function importChars() {
@@ -197,26 +202,26 @@ export default function UserPanel() {
             <>
               <h3>Lista de Personajes</h3>
               <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
-                <a
+                <Link
+                  to="/usuario/crear"
                   className="itemNav"
-                  style={{ cursor: 'pointer', color: '#d4af37' }}
-                  onClick={() => navigate('/usuario/crear')}
+                  style={{ color: 'var(--color-gold)' }}
                 >
                   Crear nuevo personaje
-                </a>
-                <span style={{ color: 'rgba(255,254,189,0.3)' }}>|</span>
+                </Link>
+                <span style={{ color: 'var(--color-cream-30)' }}>|</span>
                 <a
                   className="itemNav"
-                  style={{ cursor: 'pointer', color: '#d4af37' }}
-                  onClick={exportChars}
+style={{ cursor: 'pointer', color: 'var(--color-gold)' }}
+                   onClick={exportChars}
                 >
                   <FontAwesomeIcon icon={faDownload} style={{ marginRight: '6px' }} />
                   Exportar JSON
                 </a>
                 <a
                   className="itemNav"
-                  style={{ cursor: 'pointer', color: '#d4af37' }}
-                  onClick={importChars}
+style={{ cursor: 'pointer', color: 'var(--color-gold)' }}
+                   onClick={importChars}
                 >
                   <FontAwesomeIcon icon={faUpload} style={{ marginRight: '6px' }} />
                   Importar JSON
@@ -239,7 +244,7 @@ export default function UserPanel() {
               ) : (
                 <>
                   <div className="search-bar" style={{ maxWidth: '320px', marginBottom: '1rem' }}>
-                    <FontAwesomeIcon icon={faSearch} className="search-icon" style={{ color: '#d4af37' }} />
+                    <FontAwesomeIcon icon={faSearch} className="search-icon" style={{ color: 'var(--color-gold)' }} />
                     <Form.Control
                       type="text"
                       placeholder="Buscar por nombre, clase o raza..."
@@ -273,8 +278,8 @@ export default function UserPanel() {
                       {filtered.map(c => (
                         <tr className="character" key={c.id}>
                           <td>
-                            <Link to={`/usuario/ver/${c.id}`} style={{ color: '#d4af37' }}>
-                              {c.nombre}
+                            <Link to={`/usuario/ver/${c.id}`} style={{ color: 'var(--color-gold)' }}>
+                               {c.nombre}
                             </Link>
                           </td>
                           <td>
@@ -296,13 +301,13 @@ export default function UserPanel() {
                           <td>{c.monedas_oro ?? '—'}</td>
                           <td>
                             <div className="d-flex gap-2">
-                              <Link to={`/usuario/ver/${c.id}`} style={{ color: '#d4af37' }} title="Ver ficha">
+                              <Link to={`/usuario/ver/${c.id}`} style={{ color: 'var(--color-gold)' }} title="Ver ficha">
                                 <FontAwesomeIcon icon={faEye} />
                               </Link>
-                              <a style={{ cursor: 'pointer' }} onClick={() => navigate(`/usuario/editar/${c.id}`)} title="Editar">
+                              <Link to={`/usuario/editar/${c.id}`} title="Editar">
                                 <FontAwesomeIcon icon={faEdit} />
-                              </a>
-                              <a style={{ cursor: 'pointer', color: 'red' }} onClick={() => deleteChar(c.id)} title="Borrar">
+                              </Link>
+                              <a style={{ cursor: 'pointer', color: 'red' }} onClick={() => deleteChar(c.id)} title="Borrar" role="button">
                                 <FontAwesomeIcon icon={faTrash} />
                               </a>
                             </div>
@@ -321,8 +326,8 @@ export default function UserPanel() {
 
               <hr />
               <div className="d-flex gap-3 mt-4" style={{ alignItems: 'center' }}>
-                <a
-                  style={{ cursor: 'pointer', color: '#d4af37' }}
+                <button
+                  style={{ cursor: 'pointer', color: 'var(--color-gold)', background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 'inherit', padding: 0 }}
                   onClick={() => {
                     Swal.fire({
                       position: 'center',
@@ -337,7 +342,7 @@ export default function UserPanel() {
                   }}
                 >
                   Cerrar sesion
-                </a>
+                </button>
               </div>
             </>
           ) : (

@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { addRollToHistory } from '../components/RollHistory'
 
 export type DiceType = 4 | 6 | 8 | 10 | 12 | 20 | 100
 
@@ -42,6 +43,11 @@ export function useDiceRoller(): UseDiceRollerReturn {
   const [helpOpen, setHelpOpen] = useState(false)
   const rollIdRef = useRef(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  useEffect(() => {
+    return () => { timeoutRefs.current.forEach(id => clearTimeout(id)) }
+  }, [])
 
   const playSound = useCallback(() => {
     if (!soundOn) return
@@ -90,7 +96,7 @@ export function useDiceRoller(): UseDiceRollerReturn {
       })
     })
 
-    setTimeout(() => {
+    timeoutRefs.current.push(setTimeout(() => {
       setDice(prev => {
         if (rollIdRef.current !== rid) return prev
         const updated = prev.map(d => {
@@ -98,10 +104,12 @@ export function useDiceRoller(): UseDiceRollerReturn {
           const val = randInt(d.type)
           return { ...d, value: val, rolling: false }
         })
-        setTotal(updated.reduce((acc, d) => acc + (typeof d.value === 'number' ? d.value : 0), 0))
+        const newTotal = updated.reduce((acc, d) => acc + (typeof d.value === 'number' ? d.value : 0), 0)
+        setTotal(newTotal)
+        addRollToHistory(`Tirada (${prev.filter(d => d.rolling).length} dados)`, newTotal)
         return updated
       })
-    }, 1000)
+    }, 1000))
   }, [playSound])
 
   const rollDie = useCallback((id: number) => {
@@ -113,7 +121,7 @@ export function useDiceRoller(): UseDiceRollerReturn {
       d.id === id ? { ...d, rolling: true, value: '?' as const } : d
     ))
 
-    setTimeout(() => {
+    timeoutRefs.current.push(setTimeout(() => {
       setDice(prev => {
         if (rollIdRef.current !== rid) return prev
         const updated = prev.map(d => {
@@ -121,10 +129,14 @@ export function useDiceRoller(): UseDiceRollerReturn {
           const val = randInt(d.type)
           return { ...d, value: val, rolling: false }
         })
+        const rolledDie = updated.find(d => d.id === id)
+        if (rolledDie && typeof rolledDie.value === 'number') {
+          addRollToHistory(`d${rolledDie.type}`, rolledDie.value)
+        }
         setTotal(updated.reduce((acc, d) => acc + (typeof d.value === 'number' ? d.value : 0), 0))
         return updated
       })
-    }, 1000)
+    }, 1000))
   }, [playSound])
 
   const removeSelected = useCallback(() => {
@@ -145,9 +157,9 @@ export function useDiceRoller(): UseDiceRollerReturn {
   const resetValues = useCallback(() => {
     setDice(prev => {
       const updated = prev.map(d => ({ ...d, value: d.type }))
-      setTotal(updated.reduce((acc, d) => acc + (typeof d.value === 'number' ? d.value : 0), 0))
       return updated
     })
+    setTotal(0)
   }, [])
 
   return {

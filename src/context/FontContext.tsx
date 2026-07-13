@@ -27,12 +27,8 @@ export function FontProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem('font-mode', mode)
     document.documentElement.style.setProperty('--font-body', FONTS[mode].body)
-  }, [mode])
-
-  useEffect(() => {
-    document.documentElement.style.setProperty('--font-body', FONTS[mode].body)
     document.documentElement.style.setProperty('--font-heading', '"Cinzel Decorative", serif')
-  }, [])
+  }, [mode])
 
   return (
     <FontContext.Provider value={{ mode, toggle, bodyFont: FONTS[mode].body }}>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDragon, faUsers, faBook, faStore, faCalendarDay, faPlus, faTrash, faEdit, faSave, faSearch, faFilter, faCoins } from '@fortawesome/free-solid-svg-icons'
+import { faDragon, faUsers, faBook, faStore, faCalendarDay, faPlus, faTrash, faEdit, faSave, faSearch, faFilter, faCoins, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ITEMS, type ShopItem } from '../data/items'
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types'
 
 type DMTab = 'encuentros' | 'npcs' | 'notas' | 'tienda' | 'campanas'
 
@@ -57,17 +58,36 @@ function load<T>(key: string, fallback: T): T {
   } catch { return fallback }
 }
 
+function currencyLabel(c: string): string {
+  if (c === 'po') return 'Mon. Oro'
+  if (c === 'pl') return 'Mon. Plata'
+  if (c === 'pc') return 'Mon. Cobre'
+  return c
+}
+
 const CATEGORIES = [
   'Todas',
   'Armas simples cuerpo a cuerpo',
-  'Armas marciales cuerpo a cuerpo',
   'Armas simples a distancia',
-  'Armas marciales a distancia',
-  'Armaduras ligeras',
-  'Armaduras intermedias',
-  'Armaduras pesadas',
-  'Escudos',
+  'Arma marcial cuerpo a cuerpo',
+  'Arma marcial a distancia',
+  'Armadura ligera',
+  'Armadura intermedia',
+  'Armadura pesada',
+  'Escudo',
   'Equipo de aventura',
+  'Herramientas',
+  'Monturas y vehículos',
+  'Armaduras mágicas',
+  'Armas mágicas',
+  'Objetos maravillosos',
+  'Pociones',
+  'Pergaminos',
+  'Anillos',
+  'Bastones',
+  'Cetros',
+  'Varitas',
+  'Munición mágica',
 ]
 
 export default function DMSection() {
@@ -113,6 +133,12 @@ export default function DMSection() {
   useEffect(() => { localStorage.setItem(NPC_KEY, JSON.stringify(npcs)) }, [npcs])
   useEffect(() => { localStorage.setItem(NOTE_KEY, JSON.stringify(notes)) }, [notes])
   useEffect(() => { localStorage.setItem(CAMP_KEY, JSON.stringify(campaigns)) }, [campaigns])
+
+  useEffect(() => {
+    if (selectedCamp !== null && !campaigns.find(c => c.id === selectedCamp)) {
+      setSelectedCamp(null)
+    }
+  }, [selectedCamp, campaigns])
 
   // ── Encounter handlers ──
   function addOrUpdateEncounter() {
@@ -193,12 +219,12 @@ export default function DMSection() {
     return acc
   }, {})
 
-  const TAB_ICONS: Record<DMTab, any> = { encuentros: faDragon, npcs: faUsers, notas: faBook, tienda: faStore, campanas: faCalendarDay }
+  const TAB_ICONS: Record<DMTab, IconDefinition> = { encuentros: faDragon, npcs: faUsers, notas: faBook, tienda: faStore, campanas: faCalendarDay }
 
   return (
     <div className="dm-section">
       <div className="dm-tabs">
-        {(Object.entries(TAB_ICONS) as [DMTab, any][]).map(([key, icon]) => (
+        {(Object.entries(TAB_ICONS) as [DMTab, IconDefinition][]).map(([key, icon]) => (
           <button
             key={key}
             className={`dm-tab ${tab === key ? 'dm-tab-active' : ''}`}
@@ -350,7 +376,7 @@ export default function DMSection() {
               <Col xs={12} md={6}>
                 <div className="init-field">
                   <label className="init-label">Contenido</label>
-                  <textarea className="dnd-input" rows={3} value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="Escribe tus notas de sesión..." style={{ resize: 'vertical' }} />
+                  <input className="dnd-input" type="text" value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="Escribe tus notas de sesión..." />
                 </div>
               </Col>
               <Col xs={12} md={2}>
@@ -366,7 +392,7 @@ export default function DMSection() {
             <p className="textcont" style={{ marginTop: '1rem', opacity: 0.5 }}>No hay notas de sesión.</p>
           ) : (
             <div className="dm-list">
-              {notes.sort((a, b) => b.id - a.id).map(n => (
+              {[...notes].sort((a, b) => b.id - a.id).map(n => (
                 <div className="dm-note" key={n.id}>
                   <div className="dm-note-header">
                     <div>
@@ -412,6 +438,16 @@ export default function DMSection() {
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
+                  {shopCategory !== 'Todas' && (
+                    <button
+                      className="init-btn-sm"
+                      onClick={() => setShopCategory('Todas')}
+                      title="Limpiar filtro"
+                      style={{ background: 'rgba(165, 18, 23, 0.6)', border: 'none', color: 'var(--color-cream)', cursor: 'pointer', padding: '6px 8px', borderRadius: '6px' }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} />
+                    </button>
+                  )}
                 </div>
               </Col>
               <Col xs={12} md={2} style={{ textAlign: 'right' }}>
@@ -430,18 +466,18 @@ export default function DMSection() {
                 <h4 className="shop-category-title">{cat}</h4>
                 <Row className="g-2">
                   {items.map(item => (
-                    <Col xs={12} sm={6} md={4} lg={3} key={item.id}>
+                    <Col xs={12} sm={6} md={4} lg={4} key={item.id}>
                       <div className="shop-item-card">
                         <div className="shop-item-header">
                           <span className="shop-item-name">{item.name}</span>
                           <span className="shop-item-cost">
                             <FontAwesomeIcon icon={faCoins} style={{ marginRight: '4px', fontSize: '0.7rem' }} />
-                            {item.cost} po
+                            {item.cost > 0 ? `${item.cost} ${currencyLabel(item.currency || 'po')}` : item.rarity || '-'}
                           </span>
                         </div>
                         <p className="shop-item-desc">{item.description}</p>
                         <div className="shop-item-meta">
-                          {item.weight && <span>Peso: {item.weight}</span>}
+                          {item.weight && item.weight !== '-' && <span>Peso: {item.weight}</span>}
                           {item.properties && <span>{item.properties}</span>}
                         </div>
                       </div>
@@ -511,8 +547,7 @@ export default function DMSection() {
             <>
               {(() => {
                 const camp = campaigns.find(c => c.id === selectedCamp)
-                if (!camp) { setSelectedCamp(null); return null }
-                return (
+                return camp ? (
                   <>
                     <div className="d-flex align-items-center gap-2 mb-3" style={{ flexWrap: 'wrap' }}>
                       <button className="dnd-btn" onClick={() => setSelectedCamp(null)} style={{ fontSize: '13px', padding: '4px 10px' }}>
@@ -581,7 +616,7 @@ export default function DMSection() {
                       </div>
                     )}
                   </>
-                )
+                ) : null
               })()}
             </>
           )}

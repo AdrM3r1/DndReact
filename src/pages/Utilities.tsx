@@ -4,6 +4,9 @@ import Swal from 'sweetalert2'
 import DiceRoller from '../components/DiceRoller'
 import CoinFlip from '../components/CoinFlip'
 import InitiativeTracker from '../components/InitiativeTracker'
+import RollHistory from '../components/RollHistory'
+import DamageCalculator from '../components/DamageCalculator'
+import { COLORS } from '../theme/colors'
 
 interface ResourceLink {
   text: string
@@ -133,7 +136,7 @@ function showStoreInfo() {
       Antes de comprar por internet revisa tus tiendas locales
     </span>`,
     confirmButtonText: 'Aceptar',
-    confirmButtonColor: '#d4af37',
+    confirmButtonColor: COLORS.gold,
   })
 }
 
@@ -162,6 +165,9 @@ export default function Utilities() {
 
       <h2>Dados de rol</h2>
       <DiceRoller />
+      <RollHistory />
+
+      <DamageCalculator />
 
       <h2>Coin Flip</h2>
       <CoinFlip />

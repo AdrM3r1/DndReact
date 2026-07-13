@@ -34,10 +34,10 @@ export default function NavBar() {
   return (
     <>
       <Navbar expand="lg" variant="dark" style={{
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'var(--color-black-60)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
+        borderBottom: '1px solid var(--color-gold-15)',
         transition: 'transform 0.3s ease',
         transform: hidden ? 'translateY(-100%)' : 'translateY(0)',
         position: 'sticky',
@@ -55,7 +55,7 @@ export default function NavBar() {
               onClick={toggleTheme}
               variant="outline-warning"
               size="sm"
-              style={{ borderColor: '#d4af37', background: 'rgba(0,0,0,0.3)' }}
+              style={{ borderColor: 'var(--color-gold)', background: 'var(--color-black-30)' }}
               title={`Cambiar a modo ${themeMode === 'dark' ? 'claro' : 'oscuro'}`}
               aria-label="Alternar tema"
             >
@@ -65,7 +65,7 @@ export default function NavBar() {
               onClick={toggle}
               variant="outline-warning"
               size="sm"
-              style={{ borderColor: '#d4af37', position: 'relative', background: 'rgba(0,0,0,0.3)' }}
+              style={{ borderColor: 'var(--color-gold)', position: 'relative', background: 'var(--color-black-30)' }}
               title={`Fuente actual: ${mode === 'vinque' ? 'Vinque' : 'Cardo'}. Click para cambiar.`}
               aria-label="Alternar fuente de accesibilidad lectora"
             >
@@ -76,8 +76,8 @@ export default function NavBar() {
                 right: '-2px',
                 fontSize: '9px',
                 fontWeight: 'bold',
-                color: '#d4af37',
-                background: 'rgba(0,0,0,0.7)',
+                color: 'var(--color-gold)',
+                background: 'var(--color-black-70)',
                 borderRadius: '2px',
                 padding: '0 2px',
                 lineHeight: 1.2,
@@ -125,7 +125,7 @@ export default function NavBar() {
                         navigate('/principal')
                       })
                     }}
-                    style={{ fontFamily: 'Rostock', color: '#FFFEBD', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
+                    style={{ fontFamily: 'Rostock', color: 'var(--color-cream)', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
                   >
                     Cerrar sesion
                   </Button>

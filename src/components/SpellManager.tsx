@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBolt, faMagic, faSlidersH } from '@fortawesome/free-solid-svg-icons'
-import { SPELL_SLOTS_BY_CLASS, SPELL_SAVE_STATS, SPELL_CASTING_STATS, type Spell } from '../data/spells'
+import { SPELL_SLOTS_BY_CLASS, SPELL_CASTING_STATS, type Spell } from '../data/spells'
 
 interface ClassEntry {
   name: string

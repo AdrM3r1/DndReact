@@ -1,0 +1,21 @@
+{
+  "name": "The Iris of The Beholder",
+  "short_name": "Iris DnD",
+  "description": "Dungeons & Dragons character builder",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e1e1e",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "/images/dndMinimal-removebg-preview-cropped.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/dndMinimal-removebg-preview-cropped.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

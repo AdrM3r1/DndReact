@@ -10,6 +10,34 @@ import SpellManager from '../components/SpellManager'
 import { spells as ALL_SPELLS, SPELL_SLOTS_BY_CLASS } from '../data/spells'
 import { XP_THRESHOLDS, getHitDice, getMaxHPForLevel } from '../data/leveling'
 
+const SKILLS_LIST = [
+  'Atletismo', 'Acrobacias', 'Juego de Manos', 'Sigilo',
+  'Arcanos', 'Historia', 'Investigación', 'Naturaleza', 'Religión',
+  'Trato con Animales', 'Perspicacia', 'Medicina', 'Percepción', 'Supervivencia',
+  'Engañar', 'Intimidar', 'Interpretación', 'Persuasión',
+] as const
+
+const ALIGNMENTS = [
+  'Legal Bueno', 'Neutral Bueno', 'Caótico Bueno',
+  'Legal Neutral', 'Neutral', 'Caótico Neutral',
+  'Legal Maligno', 'Neutral Maligno', 'Caótico Maligno',
+] as const
+
+const TOOLTIPS: Record<string, string> = {
+  fuerza: 'Mide la fuerza bruta. Modificador: (FUE - 10) / 2. Usado para Atletismo y ataques cuerpo a cuerpo.',
+  destreza: 'Mide la agilidad y reflejos. Modificador: (DES - 10) / 2. Usado para Acrobacias, Sigilo, armas a distancia y CA.',
+  constitucion: 'Mide la resistencia y salud. Modificador: (CON - 10) / 2. Se suma a PG por nivel.',
+  inteligencia: 'Mide el razonamiento y memoria. Modificador: (INT - 10) / 2. Usado para Arcanos, Historia e Investigacion.',
+  sabiduria: 'Mide la percepcion e intuicion. Modificador: (SAB - 10) / 2. Usado para Percepcion, Medicina y Supervivencia.',
+  carisma: 'Mide la personalidad e influencia. Modificador: (CAR - 10) / 2. Usado para Engañar, Persuasion e Intimidar.',
+  armorClass: 'Clase de Armadura. Cuanto mas alto, mas dificil de impactar. Base: 10 + mod DES.',
+  hitPoints: 'Puntos de Golpe. Cuando llegan a 0, el personaje esta inconsciente. Se calcula automaticamente segun clase y nivel.',
+  speed: 'Velocidad de movimiento en pies por turno. Humano estandar: 30 pies.',
+  nivel: 'Nivel total del personaje (suma de todas las clases). Affects pericia,ataques, etc.',
+  xp: 'Puntos de Experiencia. Al alcanzar el umbral del siguiente nivel, el personaje sube de nivel.',
+  monedasOro: 'Monedas de oro. Un dia de vida modesta cuesta ~1 oro.',
+}
+
 export default function CharacterForm() {
   const { id } = useParams()
   const isEditing = !!id
@@ -44,19 +72,6 @@ export default function CharacterForm() {
   const [validated, setValidated] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [classList, setClassList] = useState<{ name: string; level: number }[]>([{ name: '', level: 1 }])
-
-  const SKILLS_LIST = [
-    'Atletismo', 'Acrobacias', 'Juego de Manos', 'Sigilo',
-    'Arcanos', 'Historia', 'Investigación', 'Naturaleza', 'Religión',
-    'Trato con Animales', 'Perspicacia', 'Medicina', 'Percepción', 'Supervivencia',
-    'Engañar', 'Intimidar', 'Interpretación', 'Persuasión',
-  ] as const
-
-  const ALIGNMENTS = [
-    'Legal Bueno', 'Neutral Bueno', 'Caótico Bueno',
-    'Legal Neutral', 'Neutral', 'Caótico Neutral',
-    'Legal Maligno', 'Neutral Maligno', 'Caótico Maligno',
-  ] as const
 
   const [competencias, setCompetencias] = useState<string[]>([])
 
@@ -135,7 +150,8 @@ export default function CharacterForm() {
     if (isEditing && user) {
       const stored = localStorage.getItem(`dnd_chars_${user}`)
       if (stored) {
-        const chars = JSON.parse(stored)
+        let chars: any[] = []
+        try { chars = JSON.parse(stored) } catch { chars = [] }
         const c = chars.find((x: any) => x.id === Number(id))
         if (c) {
           setNombre(c.nombre || '')
@@ -180,7 +196,7 @@ export default function CharacterForm() {
 
     const key = `dnd_chars_${user}`
     const stored = localStorage.getItem(key)
-    const chars = stored ? JSON.parse(stored) : []
+    const chars = stored ? (() => { try { return JSON.parse(stored) } catch { return [] } })() : []
 
     const newChar = {
       id: isEditing ? Number(id) : Date.now(),
@@ -239,7 +255,7 @@ export default function CharacterForm() {
 
     const allKey = 'dnd_all_chars'
     const allStored = localStorage.getItem(allKey)
-    let allChars = allStored ? JSON.parse(allStored) : []
+    let allChars = allStored ? (() => { try { return JSON.parse(allStored) } catch { return [] } })() : []
     if (isEditing) {
       const idx = allChars.findIndex((c: any) => c.id === Number(id))
       if (idx !== -1) allChars[idx] = newChar
@@ -250,7 +266,7 @@ export default function CharacterForm() {
 
     const logKey = 'dnd_char_log'
     const logStored = localStorage.getItem(logKey)
-    let log = logStored ? JSON.parse(logStored) : []
+    let log = logStored ? (() => { try { return JSON.parse(logStored) } catch { return [] } })() : []
     log.push({ ...newChar, fecha: new Date().toLocaleString() })
     localStorage.setItem(logKey, JSON.stringify(log))
 
@@ -374,7 +390,7 @@ export default function CharacterForm() {
                   </Col>
                   <Col md={3}>
                     <Form.Group>
-                      <Form.Label>Clase de Armadura</Form.Label>
+                      <Form.Label title={TOOLTIPS.armorClass}>Clase de Armadura</Form.Label>
                       <Form.Control
                         className="dnd-input"
                         type="number"
@@ -397,7 +413,7 @@ export default function CharacterForm() {
                   </Col>
                   <Col md={3}>
                     <Form.Group>
-                      <Form.Label>Puntos de Golpe (auto)</Form.Label>
+                      <Form.Label title={TOOLTIPS.hitPoints}>Puntos de Golpe (auto)</Form.Label>
                       <Form.Control
                         className="dnd-input"
                         type="number"
@@ -409,7 +425,7 @@ export default function CharacterForm() {
                   </Col>
                   <Col md={3}>
                     <Form.Group>
-                      <Form.Label>XP</Form.Label>
+                      <Form.Label title={TOOLTIPS.xp}>XP</Form.Label>
                       <Form.Control
                         className="dnd-input"
                         type="number"
@@ -421,7 +437,7 @@ export default function CharacterForm() {
                   </Col>
                   <Col md={3}>
                     <Form.Group>
-                      <Form.Label>Velocidad</Form.Label>
+                      <Form.Label title={TOOLTIPS.speed}>Velocidad</Form.Label>
                       <Form.Control
                         className="dnd-input"
                         type="number"
@@ -476,7 +492,7 @@ export default function CharacterForm() {
                   ].map(stat => (
                     <Col xs={4} md={2} key={stat.key}>
                       <Form.Group>
-                        <Form.Label style={{ fontSize: '0.8rem', textAlign: 'center', display: 'block' }}>{stat.label}</Form.Label>
+                        <Form.Label style={{ fontSize: '0.8rem', textAlign: 'center', display: 'block', cursor: 'help' }} title={TOOLTIPS[stat.key] || ''}>{stat.label} <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>ⓘ</span></Form.Label>
                         <Form.Control
                           className="dnd-input text-center"
                           type="number"
@@ -518,7 +534,7 @@ export default function CharacterForm() {
                 <Row className="g-3">
                   <Col md={3}>
                     <Form.Group>
-                      <Form.Label>Monedas de Oro</Form.Label>
+                      <Form.Label title={TOOLTIPS.monedasOro}>Monedas de Oro</Form.Label>
                       <Form.Control
                         className="dnd-input"
                         type="number"

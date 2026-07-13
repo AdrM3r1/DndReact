@@ -2,16 +2,17 @@
 /**
  * Users API - Admin operations
  *
- * GET    /api/users.php        → list all users (excluding root)
- * DELETE /api/users.php?id=N   → delete a user by id
+ * GET    /api/users.php        → list all users (admin only)
+ * DELETE /api/users.php?id=N   → delete a user by id (admin only)
  */
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/auth_middleware.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ─── LIST USERS ─────────────────────────────────────
 if ($method === 'GET') {
+    require_admin();
+
     $result = $conn->query("SELECT id, nick FROM users_ WHERE nick != 'root' ORDER BY nick");
     $users = [];
     if ($result) {
@@ -23,8 +24,9 @@ if ($method === 'GET') {
     exit;
 }
 
-// ─── DELETE USER ────────────────────────────────────
 if ($method === 'DELETE') {
+    require_admin();
+
     $id = (int)($_GET['id'] ?? 0);
     if ($id === 0) {
         http_response_code(400);
@@ -32,7 +34,6 @@ if ($method === 'DELETE') {
         exit;
     }
 
-    // Get nick before deleting so we can remove their characters
     $res = $conn->query("SELECT nick FROM users_ WHERE id = $id");
     if ($res && $row = $res->fetch_assoc()) {
         $nick = $conn->real_escape_string($row['nick']);

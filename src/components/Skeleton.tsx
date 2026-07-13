@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 interface SkeletonProps {
   width?: string | number
   height?: string | number
@@ -39,12 +41,17 @@ export default function Skeleton({ width, height, lines = 1, variant = 'text', s
 }
 
 export function SkeletonTable({ rows = 3, cols = 6 }: { rows?: number; cols?: number }) {
+  const widths = useMemo(() => 
+    Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => `${Math.floor(Math.random() * 30 + 10)}%`)
+    ), [rows, cols])
+  
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {Array.from({ length: rows }).map((_, r) => (
+      {widths.map((row, r) => (
         <div key={r} style={{ display: 'flex', gap: 16 }}>
-          {Array.from({ length: cols }).map((_, c) => (
-            <Skeleton key={c} height={16} width={`${Math.floor(Math.random() * 30 + 10)}%`} />
+          {row.map((w, c) => (
+            <Skeleton key={c} height={16} width={w} />
           ))}
         </div>
       ))}

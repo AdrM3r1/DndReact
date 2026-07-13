@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { recoveryAPI } from '../services/api'
+import { COLORS } from '../theme/colors'
 
 export default function RecoverPass() {
   const navigate = useNavigate()
@@ -11,14 +12,24 @@ export default function RecoverPass() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
+    if (!nick.trim() || !email.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debes ingresar tu nick y correo electronico',
+        confirmButtonColor: COLORS.danger,
+      })
+      return
+    }
+
     const apiResult = await recoveryAPI(nick, email)
     if (apiResult?.success) {
       Swal.fire({
         position: 'center',
         icon: 'success',
         title: 'Recuperacion exitosa',
-        text: `Tu password es: ${apiResult.password}`,
-        confirmButtonColor: '#d4af37',
+        text: 'Si los datos son correctos, recibiras un enlace de recuperacion en tu correo.',
+        confirmButtonColor: COLORS.gold,
       })
     } else {
       // Fallback: mock message
@@ -28,7 +39,7 @@ export default function RecoverPass() {
         title: 'Recuperacion enviada',
         text: `Si ${nick} existe, recibiras un enlace en ${email}`,
         showConfirmButton: true,
-        confirmButtonColor: '#d4af37',
+        confirmButtonColor: COLORS.gold,
       })
     }
   }
@@ -37,7 +48,7 @@ export default function RecoverPass() {
     <div className="welcome-page">
       <div id="indexcontent">
         <div id="log">
-          <h3 style={{ color: '#FFFEBD', textDecoration: 'underline', textDecorationThickness: 2, fontSize: '1.5rem' }}>
+          <h3 style={{ color: 'var(--color-cream)', textDecoration: 'underline', textDecorationThickness: 2, fontSize: '1.5rem' }}>
             Recupera tu password
           </h3>
           <br />

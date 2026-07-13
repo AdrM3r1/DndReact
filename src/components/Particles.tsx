@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { COLORS } from '../theme/colors'
 
 const RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛝ', 'ᛟ', 'ᛞ']
 
@@ -50,9 +51,9 @@ export default function Particles() {
         if (p.life <= 0) continue
         keep.push(p)
         ctx!.globalAlpha = p.alpha
-        ctx!.fillStyle = '#d4af37'
+        ctx!.fillStyle = COLORS.gold
         ctx!.font = `${p.size}px serif`
-        ctx!.shadowColor = 'rgba(212, 175, 55, 0.5)'
+        ctx!.shadowColor = COLORS.gold50
         ctx!.shadowBlur = 15
         ctx!.fillText(p.rune, p.x, p.y)
       }

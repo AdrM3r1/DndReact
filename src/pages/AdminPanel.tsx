@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Container, Row, Col, Table, Card } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUsers, faDiceD20, faCalendarDay, faDatabase, faArrowLeft, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faUsers, faDiceD20, faCalendarDay, faDatabase, faArrowLeft, faSignOutAlt, faEye, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
 import { getAllCharactersAPI, getUsersAPI, deleteUserAPI } from '../services/api'
 import AnimatedCounter from '../components/AnimatedCounter'
-import Skeleton, { SkeletonTable } from '../components/Skeleton'
+import { SkeletonTable } from '../components/Skeleton'
+import { COLORS } from '../theme/colors'
 
 interface Character {
   id: number | undefined
@@ -45,6 +46,17 @@ export default function AdminPanel() {
   const [cleanAmount, setCleanAmount] = useState(30)
   const [cleanUnit, setCleanUnit] = useState<'dias' | 'meses' | 'anyos'>('dias')
   const [loading, setLoading] = useState(true)
+  const [visibleCount, setVisibleCount] = useState(20)
+
+  useEffect(() => {
+    function handleScroll() {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+        setVisibleCount(prev => Math.min(prev + 20, allChars.length))
+      }
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [allChars.length])
 
   useEffect(() => {
     if (user !== 'root') {
@@ -62,7 +74,7 @@ export default function AdminPanel() {
       } else {
         const storedChars = localStorage.getItem('dnd_all_chars')
         if (storedChars) {
-          setAllChars(JSON.parse(storedChars))
+          try { setAllChars(JSON.parse(storedChars)) } catch { setAllChars([]) }
         }
       }
 
@@ -73,7 +85,8 @@ export default function AdminPanel() {
       } else {
         const storedUsers = localStorage.getItem('dnd_users')
         if (storedUsers) {
-          const parsed: AppUser[] = JSON.parse(storedUsers)
+          let parsed: AppUser[] = []
+          try { parsed = JSON.parse(storedUsers) } catch { parsed = [] }
           setUsers(parsed.filter(u => u.nick !== 'root'))
         }
       }
@@ -81,7 +94,9 @@ export default function AdminPanel() {
       // charLog always from localStorage (API doesn't expose reg_uspj directly)
       const storedLog = localStorage.getItem('dnd_char_log')
       if (storedLog) {
-        setCharLog(JSON.parse(storedLog))
+        let logChars: Character[] = []
+        try { logChars = JSON.parse(storedLog) } catch { logChars = [] }
+        setCharLog(logChars)
       }
       setLoading(false)
     }
@@ -103,12 +118,14 @@ export default function AdminPanel() {
     return new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
   })
 
+  const filtered = allChars
+
   async function deleteUser(id: number, nick: string) {
     const result = await Swal.fire({
       title: `Borrar a ${nick}?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
+      confirmButtonColor: COLORS.danger,
       confirmButtonText: 'Borrar',
       cancelButtonText: 'Cancelar',
     })
@@ -137,9 +154,9 @@ export default function AdminPanel() {
         <Col md={3}>
           <Card className="dnd-card h-100">
             <Card.Body className="d-flex align-items-center gap-3">
-              <FontAwesomeIcon icon={faUsers} size="2x" style={{ color: '#d4af37' }} />
-              <div style={{ color: '#FFFEBD' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}><AnimatedCounter value={users.length} /></div>
+              <FontAwesomeIcon icon={faUsers} size="2x" style={{ color: 'var(--color-gold)' }} />
+              <div style={{ color: 'var(--color-cream)' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: 'var(--color-gold)' }}><AnimatedCounter value={users.length} /></div>
                 <small>Usuarios</small>
               </div>
             </Card.Body>
@@ -148,9 +165,9 @@ export default function AdminPanel() {
         <Col md={3}>
           <Card className="dnd-card h-100">
             <Card.Body className="d-flex align-items-center gap-3">
-              <FontAwesomeIcon icon={faDiceD20} size="2x" style={{ color: '#d4af37' }} />
-              <div style={{ color: '#FFFEBD' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}><AnimatedCounter value={allChars.length} /></div>
+              <FontAwesomeIcon icon={faDiceD20} size="2x" style={{ color: 'var(--color-gold)' }} />
+              <div style={{ color: 'var(--color-cream)' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: 'var(--color-gold)' }}><AnimatedCounter value={allChars.length} /></div>
                 <small>Personajes</small>
               </div>
             </Card.Body>
@@ -159,9 +176,9 @@ export default function AdminPanel() {
         <Col md={3}>
           <Card className="dnd-card h-100">
             <Card.Body className="d-flex align-items-center gap-3">
-              <FontAwesomeIcon icon={faCalendarDay} size="2x" style={{ color: '#d4af37' }} />
-              <div style={{ color: '#FFFEBD' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: '#d4af37' }}><AnimatedCounter value={todayCount} /></div>
+              <FontAwesomeIcon icon={faCalendarDay} size="2x" style={{ color: 'var(--color-gold)' }} />
+              <div style={{ color: 'var(--color-cream)' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1, color: 'var(--color-gold)' }}><AnimatedCounter value={todayCount} /></div>
                 <small>Creados hoy</small>
               </div>
             </Card.Body>
@@ -170,8 +187,8 @@ export default function AdminPanel() {
         <Col md={3}>
           <Card className="dnd-card h-100">
             <Card.Body className="d-flex align-items-center gap-3">
-              <FontAwesomeIcon icon={faDatabase} size="2x" style={{ color: dbStatus === 'online' ? '#4caf50' : '#d4af37' }} />
-              <div style={{ color: '#FFFEBD' }}>
+              <FontAwesomeIcon icon={faDatabase} size="2x" style={{ color: dbStatus === 'online' ? 'var(--color-green)' : 'var(--color-gold)' }} />
+              <div style={{ color: 'var(--color-cream)' }}>
                 <div style={{ fontSize: '1rem', fontWeight: 'bold', lineHeight: 1 }}>
                   {dbStatus === 'checking' ? 'Verificando...' : dbStatus === 'online' ? 'Conectado a BD' : 'Local Storage'}
                 </div>
@@ -185,7 +202,7 @@ export default function AdminPanel() {
       <Row className="justify-content-md-start">
         <Col md={12}>
           <h3>Lista de Personajes almacenados por usuario</h3>
-          <Table className="table table-hover" variant="dark">
+          <Table className="table table-hover" variant="dark" responsive>
             <thead>
               <tr>
                 <th>Nombre</th>
@@ -214,9 +231,9 @@ export default function AdminPanel() {
                   <td colSpan={12} className="textcont">No hay personajes registrados.</td>
                 </tr>
               ) : (
-                allChars.map(c => (
+                filtered.slice(0, visibleCount).map(c => (
                   <tr className="character" key={c.id}>
-                    <td><Link to={`/usuario/ver/${c.id}`} style={{ color: '#d4af37' }}>{c.nombre}</Link></td>
+                    <td><Link to={`/usuario/ver/${c.id}`} style={{ color: 'var(--color-gold)' }}>{c.nombre}</Link></td>
                     <td>{c.clase}</td>
                     <td>{c.raza}{c.subraza ? ` (${c.subraza})` : ''}</td>
                     <td>{c.classList && c.classList.length > 1 ? c.classList.reduce((s, e) => s + e.level, 0) : c.nivel}</td>
@@ -229,7 +246,7 @@ export default function AdminPanel() {
                     <td>{c.asociadoa}</td>
                     <td>
                       <div className="d-flex gap-2">
-                        <Link to={`/usuario/ver/${c.id}`} style={{ color: '#d4af37' }} title="Ver ficha">
+                        <Link to={`/usuario/ver/${c.id}`} style={{ color: 'var(--color-gold)' }} title="Ver ficha">
                           <FontAwesomeIcon icon={faEye} />
                         </Link>
                         <a style={{ cursor: 'pointer' }} onClick={() => navigate(`/usuario/editar/${c.id}`)} title="Editar">
@@ -239,6 +256,14 @@ export default function AdminPanel() {
                           const updated = allChars.filter(x => x.id !== c.id)
                           setAllChars(updated)
                           localStorage.setItem('dnd_all_chars', JSON.stringify(updated))
+                          try {
+                            const userCharsKey = `dnd_chars_${c.asociadoa}`
+                            const userRaw = localStorage.getItem(userCharsKey)
+                            if (userRaw) {
+                              const userChars = JSON.parse(userRaw).filter((x: any) => x.id !== c.id)
+                              localStorage.setItem(userCharsKey, JSON.stringify(userChars))
+                            }
+                          } catch { /* ignore */ }
                         }} title="Borrar">
                           <FontAwesomeIcon icon={faTrash} />
                         </a>
@@ -249,6 +274,12 @@ export default function AdminPanel() {
               )}
             </tbody>
           </Table>
+
+          {visibleCount < filtered.length && (
+            <p className="textcont" style={{ textAlign: 'center', opacity: 0.6 }}>
+              Mostrando {visibleCount} de {filtered.length}. Scroll para cargar mas.
+            </p>
+          )}
 
           <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <h3 className="mb-0">Registro de todos los personajes creados en total</h3>
@@ -267,7 +298,7 @@ export default function AdminPanel() {
 
           {/* Clean controls */}
           <div className="d-flex align-items-center gap-2 flex-wrap" style={{ marginBottom: '0.5rem' }}>
-            <span style={{ color: '#FFFEBD', fontSize: '14px' }}>Borrar anteriores a</span>
+            <span style={{ color: 'var(--color-cream)', fontSize: '14px' }}>Borrar anteriores a</span>
             <input
               type="number"
               min={1}
@@ -309,12 +340,12 @@ export default function AdminPanel() {
                   text: `Se eliminaran los registros anteriores a ${cleanAmount} ${cleanUnit}.`,
                   icon: 'warning',
                   showCancelButton: true,
-                  confirmButtonColor: '#d33',
-                  confirmButtonText: 'Borrar',
-                  cancelButtonText: 'Cancelar',
-                }).then(result => {
-                  if (result.isConfirmed) {
-                    setCharLog(filtered)
+confirmButtonColor: COLORS.danger,
+                   confirmButtonText: 'Borrar',
+                   cancelButtonText: 'Cancelar',
+                 }).then(result => {
+                   if (result.isConfirmed) {
+                     setCharLog(filtered)
                     localStorage.setItem('dnd_char_log', JSON.stringify(filtered))
                     setSelectedLog(new Set())
                     Swal.fire('Borrados', `${removed} registro(s) eliminados.`, 'success')
@@ -324,7 +355,7 @@ export default function AdminPanel() {
             >
               Borrar
             </button>
-            <span style={{ color: '#aaa', fontSize: '13px', marginLeft: '8px' }}>
+            <span style={{ color: 'var(--color-grey)', fontSize: '13px', marginLeft: '8px' }}>
               ({selectedLog.size} seleccionados)
             </span>
           </div>
@@ -366,7 +397,7 @@ export default function AdminPanel() {
                   <tr
                     className="character"
                     key={i}
-                    style={selectedLog.has(i) ? { backgroundColor: 'rgba(212, 175, 55, 0.15)' } : undefined}
+                    style={selectedLog.has(i) ? { backgroundColor: 'var(--color-gold-15)' } : undefined}
                   >
                     <td>
                       <input
@@ -402,7 +433,7 @@ export default function AdminPanel() {
                     title: `Borrar ${selectedLog.size} registro(s) seleccionados?`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
+                    confirmButtonColor: COLORS.danger,
                     confirmButtonText: 'Borrar',
                     cancelButtonText: 'Cancelar',
                   }).then(result => {
@@ -463,7 +494,7 @@ export default function AdminPanel() {
               <FontAwesomeIcon icon={faArrowLeft} /> Volver a Mi cuenta
             </Link>
             <a
-              style={{ cursor: 'pointer', color: '#d4af37', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '1rem' }}
+              style={{ cursor: 'pointer', color: 'var(--color-gold)', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '1rem' }}
               onClick={() => {
                 Swal.fire({
                   position: 'center',

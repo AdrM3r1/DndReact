@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { Container, Row, Col, Nav, Form } from 'react-bootstrap'
 import ScrollProgress from '../components/ScrollProgress'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,6 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { classes } from '../data/classes'
 import { races } from '../data/races'
+import { COLORS } from '../theme/colors'
 
 const TABS = [
   { key: 'empezar', label: 'Empezar', icon: faRocket },
@@ -24,11 +26,11 @@ const TABS = [
 type TabKey = typeof TABS[number]['key']
 
 const ACCENT: Record<TabKey, string> = {
-  empezar: '#d4af37',
-  clases: '#4a7dc9',
-  razas: '#4caf50',
-  consejos: '#c20929',
-  wizard: '#9c27b0',
+  empezar: COLORS.gold,
+  clases: COLORS.blue,
+  razas: COLORS.green,
+  consejos: COLORS.redLight,
+  wizard: COLORS.purple,
 }
 
 const GUIDE_SECTIONS = [
@@ -50,7 +52,7 @@ function SubItem({ icon, title, children }: { icon: any; title: string; children
   return (
     <div style={{ marginBottom: '1rem' }}>
       <strong>
-        <FontAwesomeIcon icon={icon} style={{ width: '20px', marginRight: '8px', color: '#d4af37' }} />
+        <FontAwesomeIcon icon={icon} style={{ width: '20px', marginRight: '8px', color: 'var(--color-gold)' }} />
         {title}
       </strong>
       <div style={{ paddingLeft: '28px' }}>{children}</div>
@@ -61,13 +63,13 @@ function SubItem({ icon, title, children }: { icon: any; title: string; children
 function ClassCardCompact({ c, accent }: { c: (typeof classes)[number]; accent: string }) {
   const [expanded, setExpanded] = useState(false)
   const typeLabel = !c.magic ? 'Marrial' : c.magic.includes('Lanzador puro') ? 'Mago' : c.magic.includes('Lanzador medio') ? 'H\u00edbrido' : 'Marrial'
-  const typeColor = !c.magic ? '#e57373' : c.magic.includes('Lanzador puro') ? '#64b5f6' : '#ffb74d'
+  const typeColor = !c.magic ? COLORS.typeMarrial : c.magic.includes('Lanzador puro') ? COLORS.typeMago : COLORS.typeHibrido
   const descShort = c.description.slice(0, 120).trim()
 
   return (
     <div className="dnd-card class-card-compact">
       <div className="class-card-header">
-        <img src={c.icon} alt="" className="class-card-icon" />
+        <img src={c.icon} alt={c.name} className="class-card-icon" />
         <div>
           <h5 className="class-card-name">{c.name}</h5>
           <span className="class-type-badge" style={{ background: typeColor }}>{typeLabel}</span>
@@ -115,7 +117,7 @@ function RaceCardCompact({ r, accent }: { r: (typeof races)[number]; accent: str
   return (
     <div className="dnd-card race-card-compact">
       <div className="class-card-header">
-        <img src={r.icon} alt="" className="class-card-icon" />
+        <img src={r.icon} alt={r.name} className="class-card-icon" />
         <div>
           <h5 className="class-card-name">{r.name}</h5>
         </div>
@@ -327,7 +329,7 @@ function ClassWizard({ accent, onSelectClass }: { accent: string; onSelectClass?
                 onClick={() => onSelectClass?.(c.name, classData.map(x => x.name))}
                 title="Click para ver esta clase"
               >
-                <img src={c.icon} alt="" className="class-card-icon" />
+                <img src={c.icon} alt={c.name} className="class-card-icon" />
                 <strong>{c.name}</strong>
                 <span className="class-stat">
                   <FontAwesomeIcon icon={faDiceD20} style={{ color: accent }} /> {c.hitDice}
@@ -360,7 +362,7 @@ function ClassWizard({ accent, onSelectClass }: { accent: string; onSelectClass?
             <span
               key={i}
               className={`wizard-dot ${i === step ? 'active' : ''} ${i < step ? 'done' : ''}`}
-              style={{ background: i <= step ? accent : 'rgba(255,255,255,0.2)' }}
+              style={{ background: i <= step ? accent : 'var(--color-white-20)' }}
             />
           ))}
         </div>
@@ -371,7 +373,7 @@ function ClassWizard({ accent, onSelectClass }: { accent: string; onSelectClass?
               key={opt.value}
               className="wizard-option"
               onClick={() => handleAnswer(opt.value)}
-              style={{ '--accent': accent, borderColor: 'rgba(212,175,55,0.2)' } as React.CSSProperties}
+              style={{ '--accent': accent, borderColor: 'var(--color-gold-20)' } as React.CSSProperties}
             >
               <FontAwesomeIcon icon={opt.icon} style={{ color: accent }} />
               <span>{opt.label}</span>
@@ -498,7 +500,7 @@ export default function HowToPlay() {
           <Col md={activeTab === 'empezar' ? 9 : 12}>
             <div className="tab-content-animate" key={activeTab} style={{ '--accent-color': accent } as React.CSSProperties}>
               {activeTab === 'empezar' && (
-                <EmpezarContent accent={accent} />
+                <EmpezarContent />
               )}
               {activeTab === 'clases' && (
                 <ClasesContent
@@ -545,7 +547,7 @@ export default function HowToPlay() {
             <nav style={{ '--bs-breadcrumb-divider': "'>'" } as React.CSSProperties} aria-label="breadcrumb">
               <ol className="breadcrumb">
                 <li className="breadcrumb-item">
-                  <a href="/">Home</a>
+                  <Link to="/principal">Home</Link>
                 </li>
                 <li className="breadcrumb-item active" style={{ color: accent }} aria-current="page">
                   Como Jugar
@@ -559,7 +561,7 @@ export default function HowToPlay() {
   )
 }
 
-function EmpezarContent({ accent }: { accent: string }) {
+function EmpezarContent() {
   return (
     <>
       <div className="howtoplay-hero">
@@ -567,7 +569,7 @@ function EmpezarContent({ accent }: { accent: string }) {
         <div className="howtoplay-hero-content">
           <img src="/images/dndMinimal-removebg-preview-cropped.png" alt="D&D" className="howtoplay-hero-logo" />
           <h3 style={{ color: '#fff' }}>Bienvenido a Dungeons &amp; Dragons</h3>
-          <p style={{ color: 'rgba(255,255,255,0.85)', maxWidth: '600px', margin: '0 auto' }}>
+          <p style={{ color: 'var(--color-white-85)', maxWidth: '600px', margin: '0 auto' }}>
             Una gu&iacute;a r&aacute;pida para empezar tu primera aventura. Todo lo que necesitas saber
             para crear personajes, entender las reglas y divertirte con tu grupo.
           </p>
@@ -699,7 +701,7 @@ function ClasesContent({
               onClick={() => { onTypeFilterChange(t); onClearWizard?.() }}
               style={{
                 '--accent': accent,
-                borderColor: typeFilter === t ? accent : 'rgba(212,175,55,0.2)',
+                borderColor: typeFilter === t ? accent : 'var(--color-gold-20)',
               } as React.CSSProperties}
             >
               {t === 'all' ? 'Todas' : t === 'marrial' ? 'Marrial' : t === 'mago' ? 'Mago' : 'H\u00edbrido'}
@@ -754,7 +756,7 @@ function RazasContent({
               onClick={() => onTypeFilterChange(t)}
               style={{
                 '--accent': accent,
-                borderColor: typeFilter === t ? accent : 'rgba(212,175,55,0.2)',
+                borderColor: typeFilter === t ? accent : 'var(--color-gold-20)',
               } as React.CSSProperties}
             >
               {t === 'all' ? 'Todas' : t === 'comunes' ? 'Comunes' : 'Ex\u00f3ticas'}

@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 interface AuthContextType {
   user: string | null
   loading: boolean
-  login: (username: string) => void
+  login: (username: string, token?: string) => void
   logout: () => void
   isLoggedIn: boolean
   isAdmin: boolean
@@ -21,24 +21,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false)
   }, [])
 
-  function login(username: string) {
+  function login(username: string, token?: string) {
     setUser(username)
     localStorage.setItem('dnd_user', username)
     document.cookie = `dnd_user=${username}; path=/; max-age=86400`
-    if (!localStorage.getItem('dnd_users')) {
-      localStorage.setItem('dnd_users', JSON.stringify([{ id: 0, nick: 'root' }]))
-    }
-    const raw = localStorage.getItem('dnd_users') || '[]'
-    const list = JSON.parse(raw)
-    if (!list.find((u: any) => u.nick === username)) {
-      list.push({ id: Date.now(), nick: username })
-      localStorage.setItem('dnd_users', JSON.stringify(list))
+    if (token) {
+      localStorage.setItem('dnd_jwt_token', token)
     }
   }
 
   function logout() {
     setUser(null)
     localStorage.removeItem('dnd_user')
+    localStorage.removeItem('dnd_jwt_token')
     document.cookie = 'dnd_user=; path=/; max-age=0'
   }
 

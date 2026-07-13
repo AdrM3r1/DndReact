@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Container, Row, Col } from 'react-bootstrap'
 import { useAuth } from '../context/AuthContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faArrowLeft, faDiceD20, faShieldAlt, faTint, faHeart, faStar, faBolt } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faArrowLeft, faDiceD20, faStar } from '@fortawesome/free-solid-svg-icons'
 import { classes } from '../data/classes'
 import { races } from '../data/races'
 import SpellManager from '../components/SpellManager'
@@ -66,7 +66,8 @@ export default function CharacterSheet() {
     if (!isLoggedIn || !user || !id) return
     const stored = localStorage.getItem(`dnd_chars_${user}`)
     if (stored) {
-      const chars: CharData[] = JSON.parse(stored)
+      let chars: CharData[] = []
+      try { chars = JSON.parse(stored) } catch { return }
       const c = chars.find(x => x.id === Number(id))
       if (c) setChar(c)
     }
@@ -77,7 +78,7 @@ export default function CharacterSheet() {
     return (
       <Container className="mt-4">
         <p className="textcont">Personaje no encontrado.</p>
-        <Link to="/usuario" style={{ color: '#d4af37' }}>Volver a mis personajes</Link>
+        <Link to="/usuario" style={{ color: 'var(--color-gold)' }}>Volver a mis personajes</Link>
       </Container>
     )
   }
@@ -100,8 +101,8 @@ export default function CharacterSheet() {
             </p>
           </div>
           <div className="cs-header-icons">
-            {classInfo && <img src={classInfo.icon} alt="" className="cs-icon" />}
-            {raceInfo && <img src={raceInfo.icon} alt="" className="cs-icon" />}
+            {classInfo && <img src={classInfo.icon} alt={classInfo.name} className="cs-icon" />}
+            {raceInfo && <img src={raceInfo.icon} alt={raceInfo.name} className="cs-icon" />}
           </div>
         </div>
 
@@ -155,14 +156,22 @@ export default function CharacterSheet() {
                   )}
                 </span>
                 {char.nivel < 20 && (
-                  <div style={{ width: '100%', height: 4, background: 'rgba(0,0,0,0.3)', borderRadius: 2, marginTop: 4 }}>
-                    <div style={{
-                      width: `${((char.xp - XP_THRESHOLDS[char.nivel - 1]) / (XP_THRESHOLDS[char.nivel] - XP_THRESHOLDS[char.nivel - 1]) * 100)}%`,
-                      height: '100%',
-                      background: '#d4af37',
-                      borderRadius: 2,
-                      transition: 'width 0.3s',
-                    }} />
+                  <div style={{ width: '100%', height: 4, background: 'var(--color-black-30)', borderRadius: 2, marginTop: 4 }}>
+                    {(() => {
+                      const prevThreshold = XP_THRESHOLDS[Math.max(0, char.nivel - 1)] ?? 0
+                      const nextThreshold = XP_THRESHOLDS[Math.min(char.nivel, XP_THRESHOLDS.length - 1)]
+                      if (!nextThreshold || nextThreshold === prevThreshold) return null
+                      const pct = Math.min(100, Math.max(0, ((char.xp - prevThreshold) / (nextThreshold - prevThreshold)) * 100))
+                      return (
+                        <div style={{
+                          width: `${pct}%`,
+                          height: '100%',
+                          background: 'var(--color-gold)',
+                          borderRadius: 2,
+                          transition: 'width 0.3s',
+                        }} />
+                      )
+                    })()}
                   </div>
                 )}
               </div>
@@ -197,7 +206,7 @@ export default function CharacterSheet() {
         {char.trasfondo && (
           <div className="cs-section">
             <h5 className="cs-section-title">
-              <FontAwesomeIcon icon={faStar} style={{ marginRight: '8px', color: '#d4af37' }} />
+              <FontAwesomeIcon icon={faStar} style={{ marginRight: '8px', color: 'var(--color-gold)' }} />
               Trasfondo
             </h5>
             <p className="cs-section-text">{char.trasfondo}</p>
@@ -207,7 +216,7 @@ export default function CharacterSheet() {
         {char.competencias && (
           <div className="cs-section">
             <h5 className="cs-section-title">
-              <FontAwesomeIcon icon={faDiceD20} style={{ marginRight: '8px', color: '#d4af37' }} />
+              <FontAwesomeIcon icon={faDiceD20} style={{ marginRight: '8px', color: 'var(--color-gold)' }} />
               Competencias
             </h5>
             <p className="cs-section-text">{char.competencias}</p>
@@ -217,7 +226,7 @@ export default function CharacterSheet() {
         {(char.monedas_oro || char.arma || char.armadura || char.invent) && (
           <div className="cs-section">
             <h5 className="cs-section-title">
-              <FontAwesomeIcon icon={faStar} style={{ marginRight: '8px', color: '#d4af37' }} />
+              <FontAwesomeIcon icon={faStar} style={{ marginRight: '8px', color: 'var(--color-gold)' }} />
               Equipo
             </h5>
             <Row className="g-2">

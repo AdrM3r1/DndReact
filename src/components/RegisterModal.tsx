@@ -4,6 +4,7 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import { registerAPI } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { COLORS } from '../theme/colors'
 
 interface RegisterModalProps {
   show: boolean
@@ -37,7 +38,7 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
         icon: 'error',
         title: 'Error',
         text: 'Las contraseñas no coinciden',
-        confirmButtonColor: '#d33',
+        confirmButtonColor: COLORS.danger,
       })
       return
     }
@@ -45,18 +46,18 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
     // Try API first
     const apiResult = await registerAPI(nick, email, pass, cpass)
     if (apiResult?.success) {
-      login(apiResult.user)
+      login(apiResult.user, apiResult.token)
     } else {
       // Fallback: localStorage mode
       const raw = localStorage.getItem('dnd_users') || '[]'
-      const list = JSON.parse(raw)
+      const list = (() => { try { return JSON.parse(raw) } catch { return [] } })()
       if (list.find((u: any) => u.nick === nick)) {
         setSubmitting(false)
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: 'El nick ya existe',
-          confirmButtonColor: '#d33',
+          confirmButtonColor: COLORS.danger,
         })
         return
       }
@@ -88,7 +89,7 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
       icon: 'info',
       title: 'Info',
       text: 'Enviar se desbloqueara cuando los campos esten rellenos',
-      confirmButtonColor: '#d4af37',
+      confirmButtonColor: COLORS.gold,
     })
   }
 
@@ -99,7 +100,7 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
           Registro
           <span
             onClick={showInfo}
-            style={{ cursor: 'pointer', color: '#d4af37', marginLeft: 6 }}
+            style={{ cursor: 'pointer', color: 'var(--color-gold)', marginLeft: 6 }}
           >*</span>
         </Modal.Title>
       </Modal.Header>
@@ -162,7 +163,7 @@ export default function RegisterModal({ show, onHide, onShowLogin }: RegisterMod
           <div style={{ marginTop: 8, fontSize: 13 }}>
             <span
               onClick={() => { onHide(); onShowLogin?.() }}
-              style={{ color: '#d4af37', cursor: 'pointer' }}
+              style={{ color: 'var(--color-gold)', cursor: 'pointer' }}
             >&iquest;Ya estas registrado?</span>
           </div>
         </Modal.Footer>
