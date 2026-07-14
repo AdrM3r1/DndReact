@@ -25,5 +25,4 @@ dist-ssr
 
 #others
 .dockerignore
-package-lock.json
 nginx.conf
